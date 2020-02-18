@@ -1,6 +1,6 @@
 # Team Zero
 
-Our application, *zero*, aims to be a project management tool that is integrated with github, allowing for easy collaboration amongst developers. It is a visual aid for tracking who is working on what, along with proving essential git features such as creating / merging branches, and submitting merge requests. It can seen as a combination of numerous similar tools such as Jira, Github Projects, and Gitlab Boards, but with handpicked features from all combined into a single simple application.
+Our application, *zero*, aims to be a project management tool that is integrated with github, allowing for easy collaboration amongst developers. It is a visual aid for tracking who is working on what, along with providing essential git features such as creating / merging branches, and submitting merge requests. It can seen as a combination of numerous similar tools such as Jira, Github Projects, and Gitlab Boards, but with handpicked features from all combined into a single simple application.
 
 ## Beta Version
 
