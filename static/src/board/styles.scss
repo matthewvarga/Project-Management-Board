@@ -1,0 +1,41 @@
+@import "../styles/variables";
+
+.board {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+}
+
+.board_header {
+    padding: 20px;
+}
+.board_title {
+    color: $primary-text-light;
+}
+
+.board_columns {
+    display: flex;
+    flex-direction: row;
+}
+
+.board_column, .add_board_column {
+    width: 250px;
+    margin: 5px;
+    
+    border-radius: 5px;
+}
+
+.board_column {
+    background: $tertiary-background-light;
+    min-height: 800px;
+}
+
+.add_board_column {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 150px;
+    border: 1px dashed $quaternary-background-light;
+    cursor: pointer;
+    color: $primary-text-light;
+}
