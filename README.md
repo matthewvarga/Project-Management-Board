@@ -56,10 +56,9 @@ Our top 5 technical challenges we plan to overcome during this project are:
 
 1) Utilizing many new frontent frameworks / librarys (React, Webpack, Babel, SASS)
 2) Utilizing a variety of new backend and database languages / resources (Go, MongoDB, GraphQL)
-2) Heavily Integrating APIs (GitHub, Discord / Slack)
-3) Involving Continous Integration in the development cycle
-4) creating a slack / discor bot that works alongside the web application
-5) implement email notifications throughout the application
+3) Heavily Integrating APIs (GitHub, Discord / Slack)
+4) Involving Continous Integration in the development cycle
+5) creating a slack / discor bot that works alongside the web application
 
 ## Getting Started
 
