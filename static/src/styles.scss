@@ -2,4 +2,26 @@
     display: flex;
     flex-grow: 1;
     height: 100%;
+    border: 2px solid red;
+    background: rgba(255, 0, 0, 0.10);
+
+    &.one {
+        border: 2px solid green;
+        background: rgba(0, 255, 0, 0.10);
+    }
+
+    &.two {
+        border: 2px solid blue;
+        background: rgba(0, 0, 255, 0.10);
+    }
+
+    &.three {
+        border: 2px solid yellow;
+        background: rgba(255, 255, 0, 0.1);
+    }
+
+    &.four {
+        border: 2px solid pink;
+        background: rgba(255, 0, 255, 0.1);
+    }
 }

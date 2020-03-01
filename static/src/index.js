@@ -19,8 +19,10 @@ ReactDOM.render(
             <Route path={"*"}>
                 <Board>
                     <div className={"temp_col"}></div>
-                    <div className={"temp_col"}></div>
-                    <div className={"temp_col"}></div>
+                    <div className={"temp_col one"}></div>
+                    <div className={"temp_col two"}></div>
+                    <div className={"temp_col three"}></div>
+                    <div className={"temp_col four"}></div>
                 </Board>
             </Route>
         </Switch>
