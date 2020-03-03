@@ -1,6 +1,15 @@
 # Team Zero
 
-Our application, *zero*, aims to be a project management tool that is integrated with github, allowing for easy collaboration amongst developers. It is a visual aid for tracking who is working on what, along with providing essential git features such as creating / merging branches, and submitting merge requests. It can seen as a combination of numerous similar tools such as Jira, Github Projects, and Gitlab Boards, but with handpicked features from all combined into a single simple application.
+Our application, *zero*, aims to be a project management tool that is well integrated with GitHub, allowing for easy collaboration amongst developers. It is a visual aid for tracking who is working on what, along with providing essential git features such as creating / merging branches, and submitting pull requests. It can seen as a combination of numerous similar tools such as Jira, GitHub Projects, and Gitlab Boards, but with handpicked features from all combined into a single simple and easy to use application.
+
+## Team Members
+
+This project was created by:
+
+- Matthew Varga
+- Abithan Kumarasamy
+- Johnson Zhu
+
 
 ## Team Members
 
@@ -15,11 +24,14 @@ This project was created by:
 
 Below is a list of key features we would like to have completed for the Beta version:
 
-- User registration and login through github OAuth
+- User registration and login through GitHub OAuth
 - Display a project board for each logged in user
-- Connect a users github repository to the project board
+- Connect a user's GitHub repository to the project board
 - Allow users to add, remove, and re-arrange columns within the board
-- Allow users to add, remove, and re-arrange tickets within columns on the baord
+- Allow users to add, remove, and re-arrange tickets within columns on the board
+- We will have a backend API that provides the interface for all of the functionality mentioned above
+- Have a frontend that should be integrated with the backend API
+- Ideally, we will keep security in mind throughout the whole process, so managing sessions, sanitizing input etc.
 
 ## Final Version
 
@@ -28,17 +40,19 @@ Below is a list of features we would like to have completed for the Final versio
 - Allow users to edit existing columns
 - Allow users to edit existing tickets
 - Add additional information to tickets (flags, story points, comments, assignee)
-- track how long a ticket is in each column
-- connect tickets to git branches (be able to create a new branch from the ticket)
-- be able to filter tickets based on their flags or title
-- add a slack / discord bot that notifies the room when:
-    - a new ticket has been made
+- Track how long a ticket is in each column
+- Connect tickets to git branches (be able to create a new branch from the ticket)
+- Connect tickets to git repositories
+- Add tags to tickets
+- Be able to filter tickets based on their tags or title
+- Add a slack / discord bot that notifies the room when:
+    - a new ticket has been made or closed
     - a ticket has moved between columns
     - a ticket assignee has changed
 
 ## Technology Involved
 
-- For this applciation, we will be utilizing the following technologies:
+- For this application, we will be utilizing the following technologies:
     - [Go](https://golang.org/) - web server
     - [Gorilla](https://www.gorillatoolkit.org/) - go toolkit for sessions, router, csrf protection, cookies
     - [Mongodb](https://www.mongodb.com/) - database
@@ -54,12 +68,11 @@ Below is a list of features we would like to have completed for the Final versio
 
 Our top 5 technical challenges we plan to overcome during this project are:
 
-1) Utilizing many new frontent frameworks / librarys (React, Webpack, Babel, SASS)
+1) Utilizing many new frontend frameworks / libraries (React, Webpack, Babel, SASS)
 2) Utilizing a variety of new backend and database languages / resources (Go, MongoDB, GraphQL)
-2) Heavily Integrating APIs (GitHub, Discord / Slack)
-3) Involving Continous Integration in the development cycle
-4) creating a slack / discor bot that works alongside the web application
-5) implement email notifications throughout the application
+3) Heavily Integrating APIs (GitHub, Discord / Slack)
+4) Involving Continous Integration in the development cycle, as well as being able to deploy from scratch
+5) Creating a slack / discord bot that works alongside the web application
 
 ## Getting Started
 
@@ -77,9 +90,9 @@ To begin developing the application locally, follow the instructions listed belo
     - run: `npm run build` from *root* to **compile(todo find better word)** javascript files into single file within *dist*
     - run `go run .` from *root*, this will open a development server on `localhost:3000`
 
-## Prerequisits / Dependencies
+## Prerequisites / Dependencies
 
-### frontend
+### Frontend
 
 - [nodejs](https://nodejs.org/en/)
 
@@ -95,7 +108,7 @@ To begin developing the application locally, follow the instructions listed belo
 
 - [sass](https://sass-lang.com/) - cleaner css
 
-### backend
+### Backend
 
 - [Go](https://golang.org/)
 
