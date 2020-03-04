@@ -20,6 +20,9 @@ type spaHandler struct {
 	indexPath  string
 }
 
+const clientID = "ecd70f356de063418ef0"
+const clientSecret = "0090c648260f30e8da7a38d252b8b6a17f1576c1"
+
 // ServeHTTP inspects the URL path to locate a file within the static dir
 // on the SPA handler. If a file is found, it will be served. If not, the
 // file located at the index path on the SPA handler will be served. This
@@ -56,6 +59,11 @@ func main() {
 	router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
 		// an example API handler
 		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
+	})
+
+	// Handle GitHub OAuth authorization
+	router.HandleFunc("/oauth/redirect", func(w http.ResponseWriter, r *http.Request) {
+		githubAuthorize(w, r, clientID, clientSecret)
 	})
 
 	spa := spaHandler{staticPath: "./static/dist", indexPath: "index.html"}
