@@ -20,4 +20,7 @@ func handleRoutes(router *mux.Router) {
 	})
 
 	// ADD OTHER ROUTES HERE
+    router.HandleFunc("/api/boards/", createBoard)
+    router.HandleFunc("/api/boards/{board_id}/columns/", createColumn)
+    router.HandleFunc("/api/boards/{board_id}/columns/{column_id}/tickets/", createTicket)
 }
