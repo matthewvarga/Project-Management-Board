@@ -174,86 +174,54 @@ class Board extends Component {
      */
     colDragOver(e, colID) {
 
-        // let draggedColID = e.dataTransfer.getData("draggedColID");
-        // let draggedTktID = e.dataTransfer.getData("draggedTktID");
-        // let draggedTktColID = e.dataTransfer.getData("tktColID");
+        // moving ticket to column
+        let tktID = this.state.draggedTicketID;
+        if(tktID) {
+            let tktColID = this.findTktColID(tktID);
+            if(tktColID == colID) return; // ticket already in col
 
-        // let draggedTktID = this.state.draggedTicketID;
+            let board = this.state.board;
 
-        // console.log("ticket id: ", draggedTktID);
-        // // console.log("ticket origin col id: ", draggedTktColID);
+            // remove ticket from current col
+            let draggedTktColIndex = this.findIndexOfCol(this.findTktColID(tktID));
+            let draggedTktIndex = this.findIndexOfTkt(draggedTktColIndex, tktID);
 
-        // // ticket being dragged into this column
-        // if (this.state.draggedTicketID) {
-        //     // ticket in originating column
-        //     let startColID = this.findTktColID(draggedTktID);
+            let draggedColTkts = board.columns[draggedTktColIndex].tickets.slice(0, board.columns[draggedTktColIndex].tickets.length);
+            let newDraggedColTkts = [];
 
-        //     console.log("start col id: ");
-        //     if (startColID == colID || startColID == null) return;
-        //     else {
-        //         // ticket is in new column
-        //         console.log("ticket in new column");
+            let ticket;
 
-        //         // remove it from current col and add to new one
-        //         let board = this.state.board;
-        //         let originColIndex = this.findIndexOfCol(startColID);
+            for(let i = 0; i < draggedColTkts.length; i++) {
+                if (i != draggedTktIndex) {
+                    newDraggedColTkts.push(board.columns[draggedTktColIndex].tickets[i]);
+                }
+                else {
+                    ticket = board.columns[draggedTktColIndex].tickets[i];
+                }
+            }
+            board.columns[draggedTktColIndex].tickets = newDraggedColTkts;
+            
+            
+            // add ticket to new col
+            let hoveredColIndex = this.findIndexOfCol(colID);
+            let newColTkts = board.columns[hoveredColIndex].tickets.slice(0, board.columns[hoveredColIndex].tickets.length);
+            newColTkts.push(ticket);
 
-               
-
-        //         console.log("original column index: " + originColIndex);
-        //         let currentColIndex = this.findIndexOfCol(colID);
-        //         let originTktIndex = this.findIndexOfTkt(originColIndex, draggedTktID);
-
-
-        //         console.log("index of tkt in origin col: ", originTktIndex);
-
-        //         let tkt = board.columns[originColIndex].tickets[originTktIndex];
-        //         console.log("tkt ");
-        //         console.log(tkt);
-
-        //         let newTkts1 = [];
-        //         for (let i = 0; i < board.columns[originColIndex].tickets.length; i++) {
-        //             if (i != originTktIndex) {
-        //                 newTkts1.push(board.columns[originColIndex].tickets[i]);
-        //             }
-        //         }
-        //         let newTkts2 = [];
-        //         for (let j = 0; j < board.columns[currentColIndex].tickets.length; j++) {
-        //             newTkts2.push(board.columns[currentColIndex].tickets[j]);
-        //         }
-        //         newTkts2.push(tkt);
-                
-        //         console.log("new");
-        //         console.log(newTkts1);
-        //         console.log("old");
-        //         console.log(newTkts2);
-
-        //         // board.columns[originColIndex].tickets = newTkts1;
-        //         board.columns[currentColIndex].tickets = newTkts2;
-
-        //         console.log(board);
-
-        //         // e.dataTransfer.clearData();
-        //         // e.dataTransfer.setData("tktColID", colID);
-        //         // e.dataTransfer.setData("draggedTktID", draggedTktID);
+            board.columns[hoveredColIndex].tickets = newColTkts;
+            this.setState({
+                board: board
+            });
+        }
 
 
-        //         this.setState({
-        //             board: board,
-        //             draggedTicketID: draggedTktID,
-        //             draggedColumnID: colID
-        //         });
-        //     }
-        //     return;
-        // }
-
+        // moving column with another column
         let draggedColID = this.state.draggedColumnID;
         if (draggedColID == colID) return; // return since ontop of itself
         console.log("col " + colID + " is being dragged over");
 
         let board = this.state.board;
         let boardCols = this.state.board.columns.slice(0, this.state.board.columns.length);
-        let draggedColIndex = this.findIndexOfCol(draggedColID)
+        let draggedColIndex = this.findIndexOfCol(draggedColID);
         let hoveredColIndex = this.findIndexOfCol(colID);
         if (draggedColIndex == null || hoveredColIndex == null) {
             // console.log("unable to retrieve the column object associated with the provided id");
@@ -291,58 +259,6 @@ class Board extends Component {
         e.stopPropagation();
         e.preventDefault();
 
-        // let draggedTktID = this.state.draggedTicketID;
-        // let startColID = this.findTktColID(draggedTktID);
-        // let curColID = this.findTktColID(tktID);
-
-        // // if over a ticket in another column
-        // if(startColID != curColID) return;
-
-
-        // let board = this.state.board;
-       
-        // let draggedColIndex = this.findIndexOfCol(startColID)
-        // let hoveredColIndex = this.findIndexOfCol(curColID);
-        // if (draggedColIndex == null || hoveredColIndex == null) {
-        //     // console.log("unable to retrieve the column object associated with the provided id");
-        //     return;
-        // }
-
-        // let draggedTktIndex = this.findIndexOfTkt(draggedColIndex, draggedTktID);
-        // let hoveredTktIndex = this.findIndexOfTkt(draggedColIndex, tktID);
-        // if (draggedTktIndex == null || hoveredTktIndex == null) {
-        //     // console.log("unable to retrieve the column object associated with the provided id");
-        //     return;
-        // }
-
-        // let colTkts = this.state.board.columns[hoveredColIndex].tickets.slice(0, this.state.board.columns.length);
-        
-
-        // // moving column to the left
-        // if (hoveredTktIndex < draggedTktIndex) {
-        //     let newColTkts = colTkts.slice(0, hoveredTktIndex);
-        //     newColTkts.push(colTkts[draggedTktIndex]);
-        //     newColTkts.push(colTkts[hoveredTktIndex]);
-        //     newColTkts.push(...colTkts.slice(hoveredTktIndex + 1, draggedTktIndex))
-        //     newColTkts.push(...colTkts.slice(draggedTktIndex+1, colTkts.length));
-        //     board.columns[draggedColIndex].tickets = newColTkts;
-        //     this.setState({
-        //         board: board
-        //     });
-        // }
-        // // moving column to the right
-        // else {
-        //     let newColTkts = colTkts.slice(0, draggedTktIndex);
-        //     newColTkts.push(...colTkts.slice(draggedTktIndex+1, hoveredTktIndex));
-        //     newColTkts.push(colTkts[hoveredTktIndex]);
-        //     newColTkts.push(colTkts[draggedTktIndex]);
-        //     newColTkts.push(...colTkts.slice(hoveredTktIndex+1, colTkts.length));
-        //     board.columns[draggedColIndex].tickets = newColTkts;
-        //     this.setState({
-        //         board: board 
-        //     });
-        // }
-
         let draggedTktID = this.state.draggedTicketID;
         if (draggedTktID == tktID) return; // return since ontop of itself
         console.log("tkt " + tktID + " is being dragged over");
@@ -350,13 +266,15 @@ class Board extends Component {
 
         let tktColIndex = this.findIndexOfCol(this.findTktColID(tktID));
         let draggedTktColIndex = this.findIndexOfCol(this.findTktColID(draggedTktID));
-
-        if(tktColIndex != draggedTktColIndex) return; // tickets in diff cols
-
         let board = this.state.board;
-        let boardTkts = this.state.board.columns[tktColIndex].tickets.slice(0, this.state.board.columns[tktColIndex].tickets.length);
+        let draggedTktIndex = this.findIndexOfTkt(tktColIndex, draggedTktID);
 
-        let draggedTktIndex = this.findIndexOfTkt(tktColIndex, draggedTktID)
+
+        // tickets in diff cols
+        if(tktColIndex != draggedTktColIndex) return;
+
+        
+        let boardTkts = this.state.board.columns[tktColIndex].tickets.slice(0, this.state.board.columns[tktColIndex].tickets.length);
         let hoveredTktIndex = this.findIndexOfTkt(tktColIndex, tktID);
         if (draggedTktIndex == null || hoveredTktIndex == null) {
             // console.log("unable to retrieve the column object associated with the provided id");
