@@ -1,0 +1,12 @@
+@import "../../../styles/variables";
+
+.ticket {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    background: $primary-background-light;
+    box-shadow: $material-box-shadow-light-1;
+    border-radius: 7px;
+    height: 135px;
+    margin: 10px 0;
+}

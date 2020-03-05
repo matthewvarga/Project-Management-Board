@@ -4,7 +4,9 @@ import "./styles";
 class  IconPlus extends Component {
     render() {
         return (
-            <svg className={"icon " + (this.props.className? this.props.className:"")} version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
+            <svg className={"icon " + (this.props.className? this.props.className:"")} 
+                onClick={(e) => {this.props.onClick(e)}}
+                version="1.1" xmlns="http://www.w3.org/2000/svg" x="0px" y="0px"
                 width="93.562px" height="93.562px" viewBox="0 0 93.562 93.562" >
                 <g>
                     <path d="M87.952,41.17l-36.386,0.11V5.61c0-3.108-2.502-5.61-5.61-5.61c-3.107,0-5.61,2.502-5.61,5.61l0.11,35.561H5.61

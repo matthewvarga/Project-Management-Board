@@ -12,6 +12,7 @@
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
+    padding: 3px;
 }
 
 .column_header_container {
@@ -41,11 +42,5 @@
     &:hover {
         fill: $primary-text-highlight-light;
     }
-}
-
-.temp_tkt {
-    background: #eaad78;
-    height: 200px;
-    margin: 10px 0;
 }
 

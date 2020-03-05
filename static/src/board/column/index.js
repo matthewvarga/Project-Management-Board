@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import IconPlus from "../../../icons/index";
+import Ticket from "./ticket";
 import './styles';
 
 class Column extends Component {
@@ -27,17 +28,21 @@ class Column extends Component {
         let len = tickets.length;
         for(let i = 0; i < len; i++) {
             tkts.push (
-                <div className={"temp_tkt"} 
+                <Ticket
                     //  draggable={"true"} 
                     //  onDragStart={(e) => this.dragStart(e, i)}
                     //  onDragOver={(e) => {this.dragOver(e, i)}}
                     //  onDragEnd={(e) => {this.dragEnd(e, i)}}
                     //  onDrop={(e) => {this.dragDrop(e, i)}}
                     key={i}>
-                </div>
+                </Ticket>
             )
         }
         return tkts;
+    }
+
+    addTicket(e) {
+        console.log("add ticket");
     }
 
     render() {
@@ -56,7 +61,7 @@ class Column extends Component {
                         <h3 className={"column_title"}>{this.props.title || "Board Title"}</h3>
                     </div>
                     <div className={"column_header_container"}>
-                        <IconPlus className={"column_plus_icon"} />
+                        <IconPlus className={"column_plus_icon"} onClick={(e) => {this.addTicket(e)}}/>
                     </div>
                 </div>
                 <div className={"column_tickets"}>
