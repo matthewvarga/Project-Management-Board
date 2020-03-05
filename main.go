@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -19,9 +18,6 @@ type spaHandler struct {
 	staticPath string
 	indexPath  string
 }
-
-const clientID = "ecd70f356de063418ef0"
-const clientSecret = "0090c648260f30e8da7a38d252b8b6a17f1576c1"
 
 // ServeHTTP inspects the URL path to locate a file within the static dir
 // on the SPA handler. If a file is found, it will be served. If not, the
@@ -48,40 +44,25 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.FileServer(http.Dir(h.staticPath)).ServeHTTP(w, r)
 }
 
-func getToken(r *http.Request) string {
-	for _, cookie := range r.Cookies() {
-		if cookie.Name == "token" {
-			return cookie.Value
-		}
-	}
-	return ""
-}
-
 func main() {
 	router := mux.NewRouter()
-
-	// EXAMPLE OF API SUPER BASIC API HANDLER
-	// CAN ALSO USE MIDDLEWARE TO DICTATE WHAT
-	// TYPE OF CALLS THE ENDPOINT ACCEPTS
-	// WITH .Methods("GET", "POST", etc...)
-	// SEE https://github.com/gorilla/mux#examples
-	router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
-		// an example API handler
-		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
-	})
-
-	// Handle GitHub OAuth authorization
-	router.HandleFunc("/oauth/redirect", func(w http.ResponseWriter, r *http.Request) {
-		githubAuthorize(w, r, clientID, clientSecret)
-	})
-
-	router.HandleFunc("/api/repos", func(w http.ResponseWriter, r *http.Request) {
-		getRepositories(w, r, getToken(r))
-	})
+	// handle api routes
+	handleRoutes(router)
 
 	spa := spaHandler{staticPath: "./static/dist", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// call the example function that performs an insert and select query to
+	// the db and prints the results to log.
+	dbInsertSelectExample(db)
+
+	// serve the webpage
 	srv := &http.Server{
 		Handler: router,
 		Addr:    "localhost:3000",

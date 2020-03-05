@@ -1,12 +1,15 @@
 package main
 
 import (
-	"fmt"
 	"net/http"
 	"log"
 	"io/ioutil"
 )
 
+/**
+Returns a list of repository objects. In order to get a list of names, loop through list of returned objects
+and filter by full_name parameter
+**/
 func getRepositories(w http.ResponseWriter, r *http.Request, token string) {
 	client := http.Client{}
 	request, err := http.NewRequest("GET", "https://api.github.com/user/repos", nil)
@@ -30,5 +33,4 @@ func getRepositories(w http.ResponseWriter, r *http.Request, token string) {
 	
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
-	
 }
