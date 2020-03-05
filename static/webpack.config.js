@@ -5,6 +5,7 @@ const MiniCssExtractPlugin = require('mini-css-extract-plugin');
 module.exports = {
     module: {
         rules: [
+            // js
             {
                 test: /\.(js|jsx)$/,
                 exclude: /node_modules/,
@@ -20,6 +21,7 @@ module.exports = {
                     }
                 ]
             },
+            // sass
             {
                 test: /\.module\.s(a|c)ss$/,
                 loader: [
@@ -52,7 +54,16 @@ module.exports = {
                         }
                     }
                 ]
-            }
+            },
+            // image files (svg)
+            {
+                test: /\.(svg|png|jpe?g|gif)$/i,
+                use: [
+                  {
+                    loader: 'file-loader',
+                  },
+                ],
+              }
         ]
     },
     plugins: [

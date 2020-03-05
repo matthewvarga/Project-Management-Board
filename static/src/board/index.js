@@ -1,5 +1,5 @@
 import React, {Component} from 'react';
-import Column from "../column/index";
+import Column from "./column/index";
 import './styles';
 
 class Board extends Component {
@@ -11,7 +11,7 @@ class Board extends Component {
             "columns": [
                 {
                     "id": 1,
-                    "title": "col A",
+                    "title": "column A",
                     "tickets": [
                         {
                             "id": 1,
@@ -29,7 +29,7 @@ class Board extends Component {
                 },
                 {
                     "id": 2,
-                    "title": "col B",
+                    "title": "column B",
                     "tickets": [
                         {
                             "id": 1,
@@ -83,75 +83,88 @@ class Board extends Component {
      * @param {*} colIndex - the index of the column being dragged.
      */
     colDragStart(e, colID) {
-        //console.log("col has started being dragged: ", colIndex);
-        // this.setState({
-        //     selectedColIndex: colIndex
-        // });
         e.dataTransfer.setData("draggedColID", colID);
-        console.log("col " + colID + " has started being dragged");
+        // console.log("col " + colID + " has started being dragged");
     }
 
+    /**
+     * given a column id, and list containing column objects with ids,
+     * returns the index of that column with the mathcing id within that list.
+     * returns null if no column with the provided id exists in the list.
+     * @param {*} colsList - list of columns we are searching in
+     * @param {*} colID - the id of the column we are trying to find
+     */
+    findIndexOfCol(colsList, colID) {
+        for(let i = 0; i < colsList.length; i++) {
+            let col = colsList[i];
+            if(col.id == colID) {
+                return i;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * event handler for when a dragOver event is fired from a column,
+     * along with the columId who is firing the event. (i.e. being
+     * dragged over)
+     * @param {*} e - event
+     * @param {*} colID - id of the coloumn being dragged over
+     */
     colDragOver(e, colID) {
         let draggedColID = e.dataTransfer.getData("draggedColID");
         if (draggedColID == colID) return; // return since ontop of itself
-        console.log("col " + colID + " is being dragged over");
+        // console.log("col " + colID + " is being dragged over");
 
+        let board = this.state.board;
+        let boardCols = this.state.board.columns.slice(0, this.state.board.columns.length);
+        let draggedColIndex = this.findIndexOfCol(boardCols, draggedColID)
+        let hoveredColIndex = this.findIndexOfCol(boardCols, colID);
+        if (draggedColIndex == null || hoveredColIndex == null) {
+            console.log("unable to retrieve the column object associated with the provided id");
+            return;
+        }
 
+        // moving column to the left
+        if (hoveredColIndex < draggedColIndex) {
+            let newBoardCols = boardCols.slice(0, hoveredColIndex);
+            newBoardCols.push(boardCols[draggedColIndex]);
+            newBoardCols.push(boardCols[hoveredColIndex]);
+            newBoardCols.push(...boardCols.slice(hoveredColIndex + 1, draggedColIndex))
+            newBoardCols.push(...boardCols.slice(draggedColIndex+1, boardCols.length));
+            board.columns = newBoardCols;
+            this.setState({
+                board: board
+            });
+        }
+        // moving column to the right
+        else {
+            let newBoardCols = boardCols.slice(0, draggedColIndex);
+            newBoardCols.push(...boardCols.slice(draggedColIndex+1, hoveredColIndex));
+            newBoardCols.push(boardCols[hoveredColIndex]);
+            newBoardCols.push(boardCols[draggedColIndex]);
+            newBoardCols.push(...boardCols.slice(hoveredColIndex+1, boardCols.length));
+            board.columns = newBoardCols;
+            this.setState({
+                board: board 
+            });
+        }
     }
 
-    // /**
-    //  * Fired when a column is having another column dragged above it.
-    //  * @param {*} e 
-    //  * @param {*} colIndex - The index of the column being dragged above it.
-    //  */
-    // dragOver(e, colIndex) {
-    //     if(colIndex == this.state.selectedColIndex) return;
 
-    //     let oldCols = this.state.columns.slice(0, this.state.columns.length);
-    //     let selectedColumn = oldCols[this.state.selectedColIndex];
-    //     let droppedColumn = oldCols[colIndex];
-
-    //     // moving column to the left
-    //     if (colIndex < this.state.selectedColIndex) {
-    //         let newCols = oldCols.slice(0, colIndex);
-    //         newCols.push(selectedColumn);
-    //         newCols.push(droppedColumn);
-    //         newCols.push(...oldCols.slice(colIndex + 1, this.state.selectedColIndex))
-    //         newCols.push(...oldCols.slice(this.state.selectedColIndex+1, oldCols.length));
-    //         this.setState({
-    //             selectedColIndex: colIndex,
-    //             columns: newCols
-    //         });
-    //     }
-    //     // moving column to the right
-    //     else {
-    //         let newCols = oldCols.slice(0, this.state.selectedColIndex);
-    //         newCols.push(...oldCols.slice(this.state.selectedColIndex + 1, colIndex));
-    //         newCols.push(droppedColumn);
-    //         newCols.push(selectedColumn);
-    //         newCols.push(...oldCols.slice(colIndex + 1, oldCols.length));
-    //         this.setState({
-    //             selectedColIndex: colIndex,
-    //             columns: newCols
-    //         });
-    //     }
-    // }
-
-    // /**
-    //  * Fired when a column has been released from being dragged. 
-    //  * @param {*} e 
-    //  * @param {*} colIndex 
-    //  */
-    // dragEnd(e, colIndex) {
-    //     if(colIndex == this.state.selectedColIndex) return;
-    //     console.log("the column in position: " + colIndex + " was poved to position: " + this.state.selectedColIndex);
-
-    //     // TODO: update db with the changes
-    // }
+    /**
+     * Fired when a column has been released from being dragged. 
+     * @param {*} e 
+     * @param {*} colIndex 
+     */
+    colDragEnd(e, colIndex) {
+        if(colIndex == e.dataTransfer.getData("draggedColID")) return; // no change
+        // console.log("the column in position: " + colIndex + " was poved to position: " + this.state.selectedColIndex);
+        // TODO: update db with the new column order
+    }
 
     addColumn() {
         console.log("add new column");
-
         // TODO: add new column feature
     }
 

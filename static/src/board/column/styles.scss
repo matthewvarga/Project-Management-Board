@@ -1,0 +1,51 @@
+@import "../../styles/variables";
+
+.column {
+    border-radius: 7px;
+    background: $tertiary-background-light;
+    border: 1px solid $tertiary-border-light;
+    padding: 10px;
+}
+
+.column_header {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.column_header_container {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    justify-content: center;
+}
+
+.column_num_tickets {
+    padding: 3px 8px;
+    border-radius: 100%;
+    background: $quaternary-background-light;
+    color: $quaternary-text-light;
+}
+
+.column_title {
+    padding: 0 10px;
+}
+
+.column_plus_icon {
+    width: 23px;
+    height: 23px;
+    background-size: cover;
+    cursor: pointer;
+
+    &:hover {
+        fill: $primary-text-highlight-light;
+    }
+}
+
+.temp_tkt {
+    background: #eaad78;
+    height: 200px;
+    margin: 10px 0;
+}
+

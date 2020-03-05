@@ -1,13 +1,23 @@
 import React, {Component} from 'react';
 import './styles';
 
-class Column extends Component {
+class Ticket extends Component {
 
     constructor(props) {
         super(props);
 
         this.state = {
             tickets: props.tickets || []
+        }
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        // deep prop changes dont propogate to force statechange,
+        // so have to manually check and update
+        if(prevProps.tickets != this.props.tickets) {
+            this.setState({
+                tickets: this.props.tickets
+            })
         }
     }
 
@@ -30,6 +40,8 @@ class Column extends Component {
     }
 
     render() {
+
+        console.log("rendering tickets");
         return (
             <div className={"column " + (this.props.className ? this.props.className : "") }
                 draggable={this.props.draggable}
@@ -48,4 +60,4 @@ class Column extends Component {
     }
 }
 
-export default Column;
+export default Ticket;

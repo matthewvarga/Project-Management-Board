@@ -4,15 +4,23 @@
 $primary-background-light: #ffffff;
 $secondary-background-light: #fafbfc;
 $tertiary-background-light: #eff1f3;
-$quaternary-background-light: #888888;
+$quaternary-background-light: #b9b9b9;
 
 /***************
 *  BORDERS     *
 ****************/
 
-$tertiary-border-light: #d0d0d0;
+$tertiary-border-light: #d0d0d0;       /* borders on tertiary bg content */
 
+/***************
+*  ICONS       *
+****************/
+
+$tertiary-icon-light: #6f6f6f;          /* icons on tertiary bg */
+ 
 /*********
 *  TEXT  *
 **********/
-$primary-text-light: #404040;
+$primary-text-light: #404040;           /* text on primary bg */
+$quaternary-text-light: #1e1e1e;        /* text on quaternary bg */
+$primary-text-highlight-light: #5e8eff;
