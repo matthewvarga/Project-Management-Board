@@ -16,7 +16,7 @@ import './styles';
 ReactDOM.render(
     <Router>
         <Switch>
-            <Route path={"*"}>
+            <Route path={"/"}>
                 <Board>
                     <div className={"temp_col"}></div>
                     <div className={"temp_col one"}></div>
