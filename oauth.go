@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"net/http"
-	"os"
 	"fmt"
 )
 
@@ -13,9 +12,11 @@ to perform a GitHub OAuth Flow in Go. Setting up the HTTP request and headers wa
 like storing the OAuth token in the cookie was implemented by us.
 */
 func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSecret string) {
+
 	httpClient := http.Client{}
 	// First, we need to get the value of the `code` query param
 	err := r.ParseForm()
+
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
@@ -31,7 +32,7 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	if err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	
+
 	// We set this header since we want the response as JSON
 	req.Header.Set("accept", "application/json")
 
@@ -47,7 +48,7 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	if err := json.NewDecoder(res.Body).Decode(&t); err != nil {
 		w.WriteHeader(http.StatusBadRequest)
 	}
-	fmt.Fprintf(os.Stdout, t.AccessToken)
+
 
 	// set the cookie for the OAuth token (needs to be secured!!!!)
 	cookie := &http.Cookie{
@@ -57,6 +58,10 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	}
 
 	http.SetCookie(w, cookie)
+
+	for _, cookieA := range r.Cookies() {
+		fmt.Println("Found a cookie named:", cookieA.Value)
+	}
 
 	// redirect to home page
 	w.Header().Set("Location", "/")

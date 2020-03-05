@@ -48,6 +48,15 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	http.FileServer(http.Dir(h.staticPath)).ServeHTTP(w, r)
 }
 
+func getToken(r *http.Request) string {
+	for _, cookie := range r.Cookies() {
+		if cookie.Name == "token" {
+			return cookie.Value
+		}
+	}
+	return ""
+}
+
 func main() {
 	router := mux.NewRouter()
 
@@ -64,6 +73,10 @@ func main() {
 	// Handle GitHub OAuth authorization
 	router.HandleFunc("/oauth/redirect", func(w http.ResponseWriter, r *http.Request) {
 		githubAuthorize(w, r, clientID, clientSecret)
+	})
+
+	router.HandleFunc("/api/repos", func(w http.ResponseWriter, r *http.Request) {
+		getRepositories(w, r, getToken(r))
 	})
 
 	spa := spaHandler{staticPath: "./static/dist", indexPath: "index.html"}
