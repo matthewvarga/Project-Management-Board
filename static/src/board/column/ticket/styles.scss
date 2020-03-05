@@ -6,7 +6,13 @@
     flex-grow: 1;
     background: $primary-background-light;
     box-shadow: $material-box-shadow-light-1;
-    border-radius: 7px;
-    height: 135px;
+    border-radius: 3px;
     margin: 10px 0;
+    padding: 10px;
+    cursor: pointer;
+}
+
+.ticket_title {
+    color: $primary-text-highlight-light;
+    margin: 0 0 10px 0;
 }
