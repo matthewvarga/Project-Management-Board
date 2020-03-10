@@ -41,5 +41,7 @@ func handleRoutes(router *mux.Router) {
 		getRepositories(w, r, getToken(r))
 	})
 
-	
+	router.HandleFunc("/api/repos/users", func(w http.ResponseWriter, r *http.Request) {
+		getRepositoryCollaborators(w, r, getToken(r))
+	})
 }
