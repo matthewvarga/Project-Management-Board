@@ -73,7 +73,7 @@ func getRepositoryCollaborators(w http.ResponseWriter, r *http.Request, token st
 }
 
 type CreateBranchRequest struct {
-	OldBranch string `json:"oldBranch"`
+	SourceBranch string `json:"sourceBranch"`
 	NewBranch string `json:"newBranch"`
 	Repo string `json:"repo"`
 	Owner string `json:"owner"`
@@ -94,7 +94,7 @@ type GetBranch struct {
 Creates a branch in GitHub
 repo: name field of repository
 owner: owner field of repository
-oldBranch: string of old branch
+sourceBranch: string of old branch
 newBranch: string of new branch
 **/
 func createBranch(w http.ResponseWriter, r *http.Request, token string) {
@@ -108,7 +108,7 @@ func createBranch(w http.ResponseWriter, r *http.Request, token string) {
 	}
 	
 	client := http.Client{}
-	request, _ := http.NewRequest("GET", "https://api.github.com/repos/" + createBranchRequest.Owner + "/" + createBranchRequest.Repo + "/git/ref/heads/" + createBranchRequest.OldBranch, nil)
+	request, _ := http.NewRequest("GET", "https://api.github.com/repos/" + createBranchRequest.Owner + "/" + createBranchRequest.Repo + "/git/ref/heads/" + createBranchRequest.SourceBranch, nil)
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", "token " + token)
