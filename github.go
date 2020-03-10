@@ -72,6 +72,40 @@ func getRepositoryCollaborators(w http.ResponseWriter, r *http.Request, token st
 	w.Write(body)
 }
 
+/**
+Gets a list of branches for a specific repository, and the following need to be in the POST request
+repo: name field of repository
+owner: owner field of repository
+**/
+func getBranches(w http.ResponseWriter, r *http.Request, token string) {
+	var repository Repository
+
+	err := json.NewDecoder(r.Body).Decode(&repository)
+	
+	if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	client := http.Client{}
+	request, _ := http.NewRequest("GET", "https://api.github.com/repos/" + repository.Owner + "/" + repository.Repo + "/branches", nil)
+
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Authorization", "token " + token)
+
+	response, err := client.Do(request)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer response.Body.Close()
+
+	body, _ := ioutil.ReadAll(response.Body)
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+}
+
 type CreateBranchRequest struct {
 	SourceBranch string `json:"sourceBranch"`
 	NewBranch string `json:"newBranch"`

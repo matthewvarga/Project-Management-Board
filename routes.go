@@ -44,9 +44,14 @@ func handleRoutes(router *mux.Router) {
 		githubAuthorize(w, r, clientID, clientSecret)
 	})
 
-	//POST to create a branch
-	router.HandleFunc("/api/branch", func(w http.ResponseWriter, r *http.Request) {
+	// POST to create a branch
+	router.HandleFunc("/api/branches", func(w http.ResponseWriter, r *http.Request) {
 		createBranch(w, r, getToken(r))
+	})
+
+	//GET
+	router.HandleFunc("/api/repos/branches", func(w http.ResponseWriter, r *http.Request) {
+		getBranches(w, r, getToken(r))
 	})
 
 	//GET
