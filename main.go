@@ -49,7 +49,6 @@ func main() {
 	// handle api routes
 	handleRoutes(router)
 
-	// serve static files
 	spa := spaHandler{staticPath: "./static/dist", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
