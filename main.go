@@ -1,7 +1,6 @@
 package main
 
 import (
-	"encoding/json"
 	"log"
 	"net/http"
 	"os"
@@ -47,20 +46,23 @@ func (h spaHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 func main() {
 	router := mux.NewRouter()
-
-	// EXAMPLE OF API SUPER BASIC API HANDLER
-	// CAN ALSO USE MIDDLEWARE TO DICTATE WHAT
-	// TYPE OF CALLS THE ENDPOINT ACCEPTS
-	// WITH .Methods("GET", "POST", etc...)
-	// SEE https://github.com/gorilla/mux#examples
-	router.HandleFunc("/api/health", func(w http.ResponseWriter, r *http.Request) {
-		// an example API handler
-		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
-	})
+	// handle api routes
+	handleRoutes(router)
 
 	spa := spaHandler{staticPath: "./static/dist", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// call the example function that performs an insert and select query to
+	// the db and prints the results to log.
+	dbInsertSelectExample(db)
+
+	// serve the webpage
 	srv := &http.Server{
 		Handler: router,
 		Addr:    "localhost:3000",

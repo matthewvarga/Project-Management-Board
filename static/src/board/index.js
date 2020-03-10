@@ -89,10 +89,6 @@ class Board extends Component {
      * @param {*} colIndex - the index of the column being dragged.
      */
     colDragStart(e, colID) {
-        // e.dataTransfer.clearData();
-        // e.dataTransfer.setData("draggedColID", colID);
-        console.log("col " + colID + " has started being dragged");
-
         this.setState({
             draggedColumnID: colID,
             draggedTicketID: null
@@ -100,22 +96,11 @@ class Board extends Component {
     }
 
     tktDragStart(e, tktID) {
-        console.log("tkt " + tktID + " has started being dragged");
-        // let startCol = this.findTktColID(tktID);
-        // e.dataTransfer.clearData();
-        // e.dataTransfer.setData("tktColID", startCol);
-        // e.dataTransfer.setData("draggedTktID", tktID);
         e.stopPropagation();
-        // console.log("tkt started in col " + startCol);
-
         this.setState({
             draggedColumnID: null,
             draggedTicketID: tktID
         });
-        
-
-        
-        
     }
 
     /**
@@ -134,12 +119,15 @@ class Board extends Component {
         return null;
     }
 
+    /**
+     * returns the index of the ticket with id tktID within the column
+     * at the colIndex'th position in the list of baord columns
+     * @param {*} colIndex - the index of the column, within the boards list of columns
+     * @param {*} tktID - the id of the ticket
+     */
     findIndexOfTkt(colIndex, tktID) {
-        console.log("finding index of tktID: " + tktID + " in column " + colIndex);
-        console.log(this.state.board.columns[colIndex]);
         for(let i = 0; i < this.state.board.columns[colIndex].tickets.length; i++) {
             let tkt = this.state.board.columns[colIndex].tickets[i];
-            console.log(tkt);
             if(tkt.id == tktID) {
                 return i;
             }
@@ -217,14 +205,12 @@ class Board extends Component {
         // moving column with another column
         let draggedColID = this.state.draggedColumnID;
         if (draggedColID == colID) return; // return since ontop of itself
-        console.log("col " + colID + " is being dragged over");
 
         let board = this.state.board;
         let boardCols = this.state.board.columns.slice(0, this.state.board.columns.length);
         let draggedColIndex = this.findIndexOfCol(draggedColID);
         let hoveredColIndex = this.findIndexOfCol(colID);
         if (draggedColIndex == null || hoveredColIndex == null) {
-            // console.log("unable to retrieve the column object associated with the provided id");
             return;
         }
 
@@ -255,20 +241,16 @@ class Board extends Component {
     }
 
     tktDragOver(e, tktID) {
-        // console.log("tkt " + tktID + " is being dragged over");
         e.stopPropagation();
         e.preventDefault();
 
         let draggedTktID = this.state.draggedTicketID;
         if (draggedTktID == tktID) return; // return since ontop of itself
-        console.log("tkt " + tktID + " is being dragged over");
-
 
         let tktColIndex = this.findIndexOfCol(this.findTktColID(tktID));
         let draggedTktColIndex = this.findIndexOfCol(this.findTktColID(draggedTktID));
         let board = this.state.board;
         let draggedTktIndex = this.findIndexOfTkt(tktColIndex, draggedTktID);
-
 
         // tickets in diff cols
         if(tktColIndex != draggedTktColIndex) return;
@@ -289,6 +271,7 @@ class Board extends Component {
             newColTkts.push(...boardTkts.slice(hoveredTktIndex + 1, draggedTktIndex))
             newColTkts.push(...boardTkts.slice(draggedTktIndex+1, boardTkts.length));
             board.columns[tktColIndex].tickets = newColTkts;
+            // TODO: update db with the new columns
             this.setState({
                 board: board
             });
@@ -301,15 +284,19 @@ class Board extends Component {
             newColTkts.push(boardTkts[draggedTktIndex]);
             newColTkts.push(...boardTkts.slice(hoveredTktIndex+1, boardTkts.length));
             board.columns[tktColIndex].tickets = newColTkts;
+            // TODO: update db with the new columns
             this.setState({
                 board: board
             });
         }
-        
     }
 
+    /**
+     * prevent event propogation when leaving a ticket during drag.
+     * @param {*} e 
+     * @param {*} tktID 
+     */
     tktDragLeave(e, tktID) {
-        // console.log("leaving ticket " + tktID);
         e.stopPropagation();
         e.preventDefault();
     }
@@ -317,11 +304,10 @@ class Board extends Component {
     /**
      * Fired when a column has been released from being dragged. 
      * @param {*} e 
-     * @param {*} colIndex 
+     * @param {*} colIndex - index of column being dragged
      */
     colDragEnd(e, colIndex) {
-        if(colIndex == e.dataTransfer.getData("draggedColID")) return; // no change
-        // console.log("the column in position: " + colIndex + " was poved to position: " + e.dataTransfer.getData("draggedColID"));
+        if(colIndex == e.dataTransfer.getData("draggedColID")) return;
         // TODO: update db with the new column order
         this.setState({
             draggedTicketID: null,
@@ -329,12 +315,15 @@ class Board extends Component {
         });
     }
 
+    /**
+     * reset state to indicate no ticket is being dragged anymore
+     * @param {*} e 
+     * @param {*} tktID - id of ticket that has been released
+     */
     tktDragEnd(e, tktID) {
-        if(tktID == e.dataTransfer.getData("draggedTktID")) return; // no change
-        // console.log("the tkt : " + tktID + " was poved to position: " + e.dataTransfer.getData("draggedColID"));
+        if(tktID == e.dataTransfer.getData("draggedTktID")) return;
         e.stopPropagation();
         e.preventDefault();
-
         this.setState({
             draggedTicketID: null,
             draggedColumnID: null
