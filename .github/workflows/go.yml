@@ -29,9 +29,15 @@ jobs:
             curl https://raw.githubusercontent.com/golang/dep/master/install.sh | sh
             dep ensure
         fi
+    - run: ls -a
+    - run: cd static
+    - run: npm run build
+    - run: cd ..
+    - run: ls -a
 
     - name: Build
       run: go build -v .
+    - uses: actions/checkout@v1
     - run: ls -a
 
     - name: Upload artifact
