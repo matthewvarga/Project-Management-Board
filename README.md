@@ -59,6 +59,7 @@ Below is a list of features we would like to have completed for the Final versio
     - [GraphQL](https://graphql.org/) - query language
     - [React](https://reactjs.org/) - library for developing UI components
     - [React-Router](https://reacttraining.com/react-router/web/guides/quick-start) - library to allow for frontend routing
+    - [react-redux](https://react-redux.js.org/) - application state container
     - [Webpack](https://webpack.js.org/) - bundle all frontend together
     - [Babel](https://babeljs.io/) - compiler for js and sass
     - [npm](https://www.npmjs.com/) - install and manage froment dependencies
@@ -107,6 +108,8 @@ To begin developing the application locally, follow the instructions listed belo
 
 - [react](https://reactjs.org/) - build UI components
     - [react-router](https://reacttraining.com/react-router/web/guides/quick-start) - frontend routing
+
+- [react-redux](https://react-redux.js.org/) - application state container
 
 - [sass](https://sass-lang.com/) - cleaner css
 

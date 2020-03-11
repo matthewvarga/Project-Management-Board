@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
+import {setRepoList} from "../../actions/index";
 import Dropdown from "../../dropdown/index";
 import IconDownChevron from "../../../icons/downChevron";
 import './styles';
@@ -36,42 +38,17 @@ class NewTicketForm extends Component {
             selectedRepoIndex: 0,
             selectedBranchIndex: 0,
             selectedSourceBranchIndex: 0,
-            selectedAssigneeIndex: 0,
-            repoList: ["None"]
+            selectedAssigneeIndex: 0
         };
-
-        this.populateRepos();
     }
 
-    populateRepos() {
-        fetch("http://localhost:3000/api/repos", {
-            method: 'GET',
-            mode: 'cors',
-            headers: {
-                'Accept': 'application/json; charset=UTF-8',
-            }}).then((response) => {
-                console.log("response");
-                console.log(response);
-
-                // error
-                if (!response.ok) return;
-
-                // if response is okay, read data
-                response.json().then(data => {
-                    console.log("data");
-                    console.log(data);
-
-                    let repoNames = ["None"];
-
-                    for (let i = 0; i < data.length; i++) {
-                        repoNames.push(data[i].full_name);
-                    }
-
-                    this.setState({
-                        repoList: repoNames
-                    });
-                });   
-            });
+    listRepos() {
+        let els = ["None"];
+        if (!this.props.repoList) return els;
+        for(let i = 0; i < this.props.repoList.length; i++) {
+            els.push(this.props.repoList[i].full_name);
+        }
+        return els;
     }
 
     createTicket(e) {
@@ -81,17 +58,17 @@ class NewTicketForm extends Component {
     }
 
     // TODO: retrieve list from server
-    listRepos() {
+    // listRepos() {
     
-        //http://localhost:3000/api/repos 
-        // let repos = [];
-        // for (let i = 0; i < this.state.repoList.length; i++) {
-        //     repos.push(
-        //         <p>{this.state.repoList[i]}</p>
-        //     )
-        // }
-        return this.state.repoList;
-    }
+    //     //http://localhost:3000/api/repos 
+    //     // let repos = [];
+    //     // for (let i = 0; i < this.state.repoList.length; i++) {
+    //     //     repos.push(
+    //     //         <p>{this.state.repoList[i]}</p>
+    //     //     )
+    //     // }
+    //     return this.state.repoList;
+    // }
 
     listBranches() {
         return this.mockBranchData;
@@ -247,4 +224,14 @@ class NewTicketForm extends Component {
     }
 }
 
-export default NewTicketForm;
+// redux
+const mapStateToProps = (state, ownProps) => ({
+	repoList: state.repoList
+});
+
+// dispach 
+const mapDispatchToProps = dispatch => ({
+    setRepoList: repoList => dispatch(setRepoList(repoList))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(NewTicketForm);

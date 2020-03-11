@@ -1,4 +1,6 @@
 import React, {Component} from 'react';
+import { connect } from 'react-redux';
+import {setRepoList} from "../actions/index";
 import Column from "./column/index";
 import Dropdown from "../dropdown/index";
 import './styles';
@@ -49,6 +51,36 @@ class Board extends Component {
             draggedTicketID: null,
             draggedColumnID: null
         };
+
+        if (!this.props.repoList) this.retrieveRepos();
+    }
+
+    /**
+     * retrieve a list of signed in users github repos
+     */
+    retrieveRepos() {
+        console.log("populating repos from board component");
+        fetch("http://localhost:3000/api/repos", {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json; charset=UTF-8',
+            }}).then((response) => {
+                console.log("response");
+                console.log(response);
+
+                // error
+                if (!response.ok) return;
+
+                // if response is okay, read data
+                response.json().then(data => {
+                    console.log("data");
+                    console.log(data);
+
+                    // update store
+                    this.props.setRepoList(data);
+                });   
+            });
     }
 
     /**
@@ -355,4 +387,14 @@ class Board extends Component {
     }
 }
 
-export default Board;
+// redux
+const mapStateToProps = (state, ownProps) => ({
+	repoList: state.repoList
+});
+
+// dispach 
+const mapDispatchToProps = dispatch => ({
+    setRepoList: repoList => dispatch(setRepoList(repoList))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Board);
