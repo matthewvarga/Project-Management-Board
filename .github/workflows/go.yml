@@ -35,7 +35,7 @@ jobs:
     - uses: actions/checkout@v1
 
     - name: Upload artifact
-    - uses: actions/upload-artifact@v1
+      uses: actions/upload-artifact@v1
       with:
         name: zero-app
         path: ./zero-app
