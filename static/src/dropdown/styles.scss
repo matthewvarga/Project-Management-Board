@@ -10,12 +10,18 @@
     }
 }
 
-.dropdown_label {
+.dropdown_title_row {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     padding: 10px;
+}
+
+.dropdown_label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .dropdown_background {
@@ -34,9 +40,24 @@
     border-radius: 7px;
     padding: 10px;
     z-index: $dropdown-content-z-index;
+    max-height: 150px;
+    overflow-y: scroll;
+    overflow-x: hidden;
 }
 
 .dropdown_icon {
     width: 30px;
     height: 30px;
+}
+
+.dropdown_el {
+    padding: 5px;
+    text-overflow: ellipsis;
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+
+    &:hover, &.active {
+        background: $tertiary-background-light;
+    }
 }

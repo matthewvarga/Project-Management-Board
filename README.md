@@ -84,6 +84,7 @@ To begin developing the application locally, follow the instructions listed belo
 
     ```
         go get github.com/gorilla/mux
+        go get github.com/gorilla/handlers
         go get go.mongodb.org/mongo-driver/mongo
     ```
 5) if developing **only** the frontend without need of the server to be running, run `npm start` from *static*, and a development server will open on `localhost:8080`.

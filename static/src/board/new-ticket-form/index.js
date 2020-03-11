@@ -36,9 +36,42 @@ class NewTicketForm extends Component {
             selectedRepoIndex: 0,
             selectedBranchIndex: 0,
             selectedSourceBranchIndex: 0,
-            selectedAssigneeIndex: 0
-
+            selectedAssigneeIndex: 0,
+            repoList: ["None"]
         };
+
+        this.populateRepos();
+    }
+
+    populateRepos() {
+        fetch("http://localhost:3000/api/repos", {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json; charset=UTF-8',
+            }}).then((response) => {
+                console.log("response");
+                console.log(response);
+
+                // error
+                if (!response.ok) return;
+
+                // if response is okay, read data
+                response.json().then(data => {
+                    console.log("data");
+                    console.log(data);
+
+                    let repoNames = ["None"];
+
+                    for (let i = 0; i < data.length; i++) {
+                        repoNames.push(data[i].full_name);
+                    }
+
+                    this.setState({
+                        repoList: repoNames
+                    });
+                });   
+            });
     }
 
     createTicket(e) {
@@ -49,7 +82,15 @@ class NewTicketForm extends Component {
 
     // TODO: retrieve list from server
     listRepos() {
-        return this.mockRepoListData;
+    
+        //http://localhost:3000/api/repos 
+        // let repos = [];
+        // for (let i = 0; i < this.state.repoList.length; i++) {
+        //     repos.push(
+        //         <p>{this.state.repoList[i]}</p>
+        //     )
+        // }
+        return this.state.repoList;
     }
 
     listBranches() {
@@ -61,7 +102,6 @@ class NewTicketForm extends Component {
     }
 
     selectRepo(e, i) {
-        console.log("selected repo");
         let branchIndex = this.state.selectedBranchIndex;
         let sourceIndex = this.state.selectedSourceBranchIndex;
         let assigneeIndex = this.state.selectedAssigneeIndex;
@@ -74,7 +114,6 @@ class NewTicketForm extends Component {
     }
 
     selectBranch(e, i) {
-        console.log("selected branch");
         let sourceIndex = this.state.selectedSourceBranchIndex;
         this.setState({
             selectedBranchIndex: i,
@@ -99,7 +138,6 @@ class NewTicketForm extends Component {
     }
 
     render() {
-        console.log(this.state.selectedRepoIndex);
         return (
             <form className={"new_ticket_form"} onSubmit={this.createTicket.bind(this)}>
 

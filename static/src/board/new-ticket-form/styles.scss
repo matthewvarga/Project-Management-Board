@@ -97,3 +97,11 @@
     cursor: pointer;
 }
 
+
+// override default dropdown styles
+.form_dropdown {
+    .dropdown_content {
+        width: 380px;
+    }
+}
+
