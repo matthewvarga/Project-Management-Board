@@ -17,6 +17,11 @@ html, body, #root {
     font-size: 16px;
 }
 
+input {
+    font-size: 16px;
+    color: $primary-text-light;
+}
+
 h1, h2, h3, h4, h5, h6, p {
     margin: 0;
     padding: 0;
@@ -33,4 +38,12 @@ h2 {
 
 h3 {
     font-size: 18px;
+}
+
+// FORM STYLES
+
+input, textarea {
+    padding: 10px;
+    border: 1px solid $tertiary-border-light;
+    border-radius: 5px;
 }

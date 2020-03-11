@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import Column from "./column/index";
+import Dropdown from "../dropdown/index";
 import './styles';
 
 class Board extends Component {
@@ -341,6 +342,11 @@ class Board extends Component {
                 <div className={"board_header"}>
                     <h1 className={"board_title"}>{this.props.title || "Board Title"}</h1>
                 </div>
+                <Dropdown label={"dd"}>
+                    <p>1</p>
+                    <p>2</p>
+                    <p>3</p>
+                </Dropdown>
                 <div className={"board_columns"}>
                     {this.populateColumns(this.state.board.columns)}
                 </div>

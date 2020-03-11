@@ -33,4 +33,15 @@ $tertiary-icon-light: #6f6f6f;          /* icons on tertiary bg */
 **********/
 $primary-text-light: #404040;           /* text on primary bg */
 $quaternary-text-light: #1e1e1e;        /* text on quaternary bg */
-$primary-text-highlight-light: #498ce3;
+$primary-text-highlight-light: #279bca;
+
+
+/***********
+*  z-index *
+************/
+
+$modal-background-z-index: 10;
+$modal-content-z-index: 15;
+
+$dropdown-background-z-index: 3;
+$dropdown-content-z-index: 5;

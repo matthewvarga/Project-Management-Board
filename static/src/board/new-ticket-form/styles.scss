@@ -1,0 +1,29 @@
+@import "../../styles/variables";
+
+.new_ticket_form {
+    display: flex;
+    flex-direction: column;
+}
+
+.form_row {
+    display: flex;
+    flex-direction: column;
+    margin: 10px 0;
+}
+
+.form_dropdown {
+    padding: 10px;
+    border: 1px solid $tertiary-border-light;
+    border-radius: 5px;
+}
+
+.form_dropdown_icon {
+    width: 20px;
+    height: 20px;
+}
+
+.submit_button {
+    background: $primary-text-highlight-light;
+    color: $primary-background-light;
+    border: none;
+}

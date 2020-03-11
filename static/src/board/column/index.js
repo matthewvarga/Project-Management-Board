@@ -1,6 +1,8 @@
 import React, {Component} from 'react';
-import IconPlus from "../../../icons/index";
+import IconPlus from "../../../icons/plus";
 import Ticket from "./ticket";
+import Modal from "../../modal/index";
+import NewTicketForm from "../new-ticket-form/index";
 import './styles';
 
 class Column extends Component {
@@ -64,7 +66,11 @@ class Column extends Component {
                         <h3 className={"column_title"}>{this.props.title || "Board Title"}</h3>
                     </div>
                     <div className={"column_header_container"}>
-                        <IconPlus className={"column_plus_icon"} onClick={(e) => this.addTicket(e)}/>
+                        {/* <IconPlus className={"column_plus_icon"} onClick={(e) => this.addTicket(e)}/> */}
+                        <Modal button={<IconPlus className={"modal_plus_icon"}/>}
+                            title={"create new ticket"}>
+                            <NewTicketForm/>
+                        </Modal>
                     </div>
                 </div>
                 <div className={"column_tickets"}>
