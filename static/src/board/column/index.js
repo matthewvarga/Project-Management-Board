@@ -67,7 +67,7 @@ class Column extends Component {
                     </div>
                     <div className={"column_header_container"}>
                         {/* <IconPlus className={"column_plus_icon"} onClick={(e) => this.addTicket(e)}/> */}
-                        <Modal button={<IconPlus className={"modal_plus_icon"}/>}
+                        <Modal button={<IconPlus className={"modal_plus_icon"} onClick={() => {}}/>}
                             title={"create new ticket"}>
                             <NewTicketForm/>
                         </Modal>

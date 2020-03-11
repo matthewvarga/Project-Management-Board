@@ -1,11 +1,21 @@
 @import "../styles/variables";
 
+.dropdown {
+
+    cursor: pointer;
+
+    &.disabled {
+        cursor: default;
+        background: $tertiary-background-light;
+    }
+}
+
 .dropdown_label {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
-    cursor: pointer;
+    padding: 10px;
 }
 
 .dropdown_background {

@@ -36,7 +36,7 @@ class Modal extends Component {
 
     render() {
         return (
-            <div className={"modal " + (this.props.className ? this.props.className : "")}>
+            <div className={"modal " + (this.props.className ? this.props.className : "")} >
                 <span onClick={() => this.openModal()}>{this.props.button || "+"}</span>
                 {this.state.isOpen &&
                     <div className={"modal_background"} onClick={() => this.closeModal()}>

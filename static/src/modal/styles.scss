@@ -1,5 +1,9 @@
 @import "../styles/variables";
 
+.modal {
+    display: flex;
+    flex-direction: column;
+}
 .modal_background {
     display: flex;
     justify-content: center;
@@ -14,10 +18,10 @@
 }
 
 .modal_content {
+    display: flex;
+    flex-direction: column;
     background: $primary-background-light;
     box-shadow: $material-box-shadow-light-3;
-    width: 400px;
-    height: 600px;
     border-radius: 7px;
     padding: 15px;
     z-index: $dropdown-content-z-index;
@@ -26,7 +30,6 @@
 .modal_header_row {
     display: flex;
     flex-direction: row;
-    flex-grow: 1;
     justify-content: space-between;
     align-items: center;
     margin-bottom: 10px;

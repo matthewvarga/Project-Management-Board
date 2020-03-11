@@ -8,12 +8,25 @@ class Dropdown extends Component {
 
         this.state = {
             open: false,
-            activeIndex: 0 // first el is active
+            activeIndex: props.activeIndex || 0, // first el is active
+            disabled: props.disabled || false
         };
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        // deep prop changes dont propogate to force statechange,
+        // so have to manually check and update
+        console.log("dropdown props changed");
+        if(prevProps != this.props) {
+            this.setState({
+                activeIndex: this.props.activeIndex != undefined ? this.props.activeIndex : prevProps.activeIndex,
+                disabled: this.props.disabled
+            });
+        }
+    }
 
     openDropdown() {
+        if(this.state.disabled) return;
         // set dropdown state to open
         this.setState({
             isOpen: true
@@ -27,7 +40,8 @@ class Dropdown extends Component {
         });
     }
 
-    select(index) {
+    select(e, index) {
+        this.props.onSelectItem(e, index)
         this.setState({
             activeIndex: index,
             isOpen: false
@@ -42,8 +56,8 @@ class Dropdown extends Component {
         for (let i = 0; i < els.length; i++) {
             result.push (
                 <div className={"dropdown_el"} 
-                onClick={() => this.select(i)}
-                key={i}>
+                    onClick={(e) => this.select(e, i)}
+                    key={i}>
                     {els[i]}
                 </div>
             )
@@ -57,7 +71,7 @@ class Dropdown extends Component {
         els = (this.props.children && !this.props.children.length) ? [this.props.children] : this.props.children;
         
         return (
-            <div className={"dropdown " + (this.props.className ? this.props.className : "")}>
+            <div className={"dropdown " + (this.state.disabled ? " disabled " : "") + (this.props.className ? this.props.className : "")}>
                 <div className={"dropdown_label"} onClick={() => this.openDropdown()}>
                     <span>{this.state.activeIndex != null ? els[this.state.activeIndex] : els[0]}</span>
                     {this.props.button || "+"}
