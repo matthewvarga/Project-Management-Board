@@ -32,12 +32,12 @@ func handleRoutes(router *mux.Router) {
 	})
 
 	// ADD OTHER ROUTES HERE
-  router.HandleFunc("/api/boards/", createBoard).Methods("POST")
-  router.HandleFunc("/api/boards/{boardID}/columns/", createColumn).Methods("POST")
-  router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/", createTicket).Methods("POST")
-  router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/{ticketID}", getTicket).Methods("GET")
-  router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/", getColumn).Methods("GET")
-  router.HandleFunc("/api/boards/{boardID}/", getBoard).Methods("GET")
+	router.HandleFunc("/api/boards/", createBoard).Methods("POST")
+	router.HandleFunc("/api/boards/{boardID}/columns/", createColumn).Methods("POST")
+	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/", createTicket).Methods("POST")
+	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/{ticketID}", getTicket).Methods("GET")
+	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/", getColumn).Methods("GET")
+	router.HandleFunc("/api/boards/{boardID}/", getBoard).Methods("GET")
   
 	// Handle GitHub OAuth authorization
 	router.HandleFunc("/oauth/redirect", func(w http.ResponseWriter, r *http.Request) {
@@ -47,20 +47,25 @@ func handleRoutes(router *mux.Router) {
 	// POST to create a branch
 	router.HandleFunc("/api/branches", func(w http.ResponseWriter, r *http.Request) {
 		createBranch(w, r, getToken(r))
-	})
+	}).Methods("POST")
+
+	// POST to create a PR
+	router.HandleFunc("/api/repos/pulls", func(w http.ResponseWriter, r *http.Request) {
+		createPullRequest(w, r, getToken(r))
+	}).Methods("POST")
 
 	//GET
 	router.HandleFunc("/api/repos/branches", func(w http.ResponseWriter, r *http.Request) {
 		getBranches(w, r, getToken(r))
-	})
+	}).Methods("GET")
 
 	//GET
 	router.HandleFunc("/api/repos", func(w http.ResponseWriter, r *http.Request) {
 		getRepositories(w, r, getToken(r))
-	})
+	}).Methods("GET")
 
 	//POST to get a list of collaborators
 	router.HandleFunc("/api/repos/users", func(w http.ResponseWriter, r *http.Request) {
 		getRepositoryCollaborators(w, r, getToken(r))
-	})
+	}).Methods("POST")
 }

@@ -180,3 +180,51 @@ func createBranch(w http.ResponseWriter, r *http.Request, token string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
+
+type PullRequest struct {
+	Title string `json:"title"`
+	Body  string `json:"body"`
+	Src  string `json:"src"`
+	Dest  string `json:"dest"`
+	Repo string `json:"repo"`
+	Owner string `json:"owner"`
+}
+/**
+Creates a pull request within a repository from a source branch to a destination branch
+title: title of the PR
+body: description of the PR
+src: name of the source branch
+dest: name of the destination branch
+owner: owner of the repo
+repo: name of the repo
+**/
+func createPullRequest(w http.ResponseWriter, r *http.Request, token string) {
+	var pullRequest PullRequest
+
+	err := json.NewDecoder(r.Body).Decode(&pullRequest)
+	
+	if err != nil {
+        http.Error(w, err.Error(), http.StatusBadRequest)
+	}
+
+	client := http.Client{}
+
+	requestBody := map[string]string{"title": pullRequest.Title, "body": pullRequest.Body, "head": pullRequest.Src, "base": pullRequest.Dest}
+	requestJSON, err := json.Marshal(requestBody)
+	createRequest, _ := http.NewRequest("POST", "https://api.github.com/repos/" + pullRequest.Owner + "/" + pullRequest.Repo + "/pulls", bytes.NewBuffer(requestJSON))
+	createRequest.Header.Set("Content-Type", "application/json")
+	createRequest.Header.Set("Authorization", "token " + token)
+	
+	createResponse, err := client.Do(createRequest)
+
+	if err != nil {
+		log.Fatalln(err)
+	}
+
+	defer createResponse.Body.Close()
+	
+	body, _ := ioutil.ReadAll(createResponse.Body)
+	
+	w.Header().Set("Content-Type", "application/json")
+	w.Write(body)
+}
