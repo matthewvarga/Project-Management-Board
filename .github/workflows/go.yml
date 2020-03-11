@@ -33,6 +33,7 @@ jobs:
     - name: Build
       run: go build -v .
     - uses: actions/checkout@v1
+    - run: ls -a
 
     - name: Upload artifact
       uses: actions/upload-artifact@v1
