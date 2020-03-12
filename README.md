@@ -59,6 +59,7 @@ Below is a list of features we would like to have completed for the Final versio
     - [GraphQL](https://graphql.org/) - query language
     - [React](https://reactjs.org/) - library for developing UI components
     - [React-Router](https://reacttraining.com/react-router/web/guides/quick-start) - library to allow for frontend routing
+    - [react-redux](https://react-redux.js.org/) - application state container
     - [Webpack](https://webpack.js.org/) - bundle all frontend together
     - [Babel](https://babeljs.io/) - compiler for js and sass
     - [npm](https://www.npmjs.com/) - install and manage froment dependencies
@@ -84,12 +85,13 @@ To begin developing the application locally, follow the instructions listed belo
 
     ```
         go get github.com/gorilla/mux
+        go get github.com/gorilla/handlers
         go get go.mongodb.org/mongo-driver/mongo
     ```
 5) if developing **only** the frontend without need of the server to be running, run `npm start` from *static*, and a development server will open on `localhost:8080`.
 6) if developing server or need server running follow the steps below:
     - run: `npm run build` from *root* to **compile(todo find better word)** javascript files into single file within *dist*
-    - run `go run .` from *root*, this will open a development server on `localhost:3000`
+    - run `go run .` from *root*, this will open a development server on `project-management.tools`
 
 ## Prerequisites / Dependencies
 
@@ -106,6 +108,8 @@ To begin developing the application locally, follow the instructions listed belo
 
 - [react](https://reactjs.org/) - build UI components
     - [react-router](https://reacttraining.com/react-router/web/guides/quick-start) - frontend routing
+
+- [react-redux](https://react-redux.js.org/) - application state container
 
 - [sass](https://sass-lang.com/) - cleaner css
 

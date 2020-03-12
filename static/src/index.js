@@ -9,25 +9,26 @@ import {
     useHistory,
     useLocation
 } from "react-router-dom";
+import { Provider } from 'react-redux'; 
+import { createStore } from 'redux';
+import rootReducer from './reducers';
 import Board from "./board/index";
 import './styles/globals';
 import './styles';
 
+const store = createStore(rootReducer);
+
 ReactDOM.render(
-    <Router>
-        <Switch>
-            <Route path={"/"}>
-                <Board>
-                    <div className={"temp_col"}></div>
-                    <div className={"temp_col one"}></div>
-                    <div className={"temp_col two"}></div>
-                    <div className={"temp_col three"}></div>
-                    <div className={"temp_col four"}></div>
+    <Provider store={store}>
+        <Router>
+            <Switch>
+                <Route path={"/"}>
+                    <Board></Board>
                     <a href="http://project-management.tools/api/repos">Get Repos</a>
                     <a href="https://github.com/login/oauth/authorize?scope=repo&client_id=ecd70f356de063418ef0&redirect_uri=http://project-management.tools/oauth/redirect">Login with github</a>
-                </Board>
-            </Route>
-        </Switch>
-    </Router>,
+                </Route>
+            </Switch>
+        </Router>
+    </Provider>,   
     document.getElementById('root')
 );

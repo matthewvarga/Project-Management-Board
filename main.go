@@ -7,6 +7,7 @@ import (
 	"path/filepath"
 	"time"
 
+	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
 )
 
@@ -62,9 +63,14 @@ func main() {
 	// the db and prints the results to log.
 	dbInsertSelectExample(db)
 
+	// configure basic cors middleware
+	headersOk := handlers.AllowedHeaders([]string{"Accept, Content-Type, Content-Length, Accept-Encoding, Authorization"})
+	originsOk := handlers.AllowedOrigins([]string{"http://localhost:8080"})
+	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
+
 	// serve the webpage
 	srv := &http.Server{
-		Handler: router,
+		Handler: handlers.CORS(originsOk, headersOk, methodsOk)(router),
 		Addr:    "project-management.tools:3000",
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,

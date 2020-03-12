@@ -1,0 +1,63 @@
+@import "../styles/variables";
+
+.dropdown {
+
+    cursor: pointer;
+
+    &.disabled {
+        cursor: default;
+        background: $tertiary-background-light;
+    }
+}
+
+.dropdown_title_row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+}
+
+.dropdown_label {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dropdown_background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    z-index: $dropdown-background-z-index;
+}
+
+.dropdown_content {
+    position: absolute;
+    background: $primary-background-light;
+    box-shadow: $material-box-shadow-light-2;
+    border-radius: 7px;
+    padding: 10px;
+    z-index: $dropdown-content-z-index;
+    max-height: 150px;
+    overflow-y: scroll;
+    overflow-x: hidden;
+}
+
+.dropdown_icon {
+    width: 30px;
+    height: 30px;
+}
+
+.dropdown_el {
+    padding: 5px;
+    text-overflow: ellipsis;
+    font-size: 18px;
+    white-space: nowrap;
+    overflow: hidden;
+
+    &:hover, &.active {
+        background: $tertiary-background-light;
+    }
+}

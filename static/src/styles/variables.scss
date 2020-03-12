@@ -4,9 +4,44 @@
 $primary-background-light: #ffffff;
 $secondary-background-light: #fafbfc;
 $tertiary-background-light: #eff1f3;
-$quaternary-background-light: #888888;
+$quaternary-background-light: #b9b9b9;
 
+/***************
+*  BORDERS     *
+****************/
+$primary-border-light: #d7d7d7;
+$tertiary-border-light: #d0d0d0;       /* borders on tertiary bg content */
+
+/***************
+*  SHADOWS     *
+****************/
+// https://codepen.io/sdthornton/pen/wBZdXq?fbclid=IwAR2PCZVCXAgyWW9l_lg_6KxA1_-a5XDTtrMVQ712G1mnRH15IXV9TLbHbz4
+$material-box-shadow-light-1: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+$material-box-shadow-light-2: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+$material-box-shadow-light-3: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+$material-box-shadow-light-4: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+$material-box-shadow-light-5: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+
+/***************
+*  ICONS       *
+****************/
+
+$tertiary-icon-light: #6f6f6f;          /* icons on tertiary bg */
+ 
 /*********
 *  TEXT  *
 **********/
-$primary-text-light: #404040;
+$primary-text-light: #404040;           /* text on primary bg */
+$quaternary-text-light: #1e1e1e;        /* text on quaternary bg */
+$primary-text-highlight-light: #279bca;
+
+
+/***********
+*  z-index *
+************/
+
+$modal-background-z-index: 10;
+$modal-content-z-index: 15;
+
+$dropdown-background-z-index: 3;
+$dropdown-content-z-index: 5;
