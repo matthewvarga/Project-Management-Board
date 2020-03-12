@@ -65,7 +65,7 @@ func main() {
 	// serve the webpage
 	srv := &http.Server{
 		Handler: router,
-		Addr:    "localhost:3000",
+		Addr:    "project-management.tools:3000",
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
