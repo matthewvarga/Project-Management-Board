@@ -7,8 +7,8 @@ import (
 	"github.com/gorilla/mux"
 )
 
-const clientID = "ecd70f356de063418ef0"
-const clientSecret = "0090c648260f30e8da7a38d252b8b6a17f1576c1"
+const clientID = "e01c4cb7708610450afc"
+const clientSecret = "38da3ca3afdc297d94145fe8a18fd4571721129e"
 
 func getToken(r *http.Request) string {
 	for _, cookie := range r.Cookies() {
