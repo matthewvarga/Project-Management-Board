@@ -155,12 +155,14 @@ func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 	return nil
 }
 
+// Board ...
 type Board struct {
 	ID      primitive.ObjectID   `bson:"_id,omitempty"`
 	Title   string               `json:"title" bson:"title"`
 	Columns []primitive.ObjectID `json:"columns" bson:"columns"`
 }
 
+// Column ...
 type Column struct {
 	ID      primitive.ObjectID   `bson:"_id,omitempty"`
 	Title   string               `json:"title" bson:"title"`
@@ -168,6 +170,7 @@ type Column struct {
 	Tickets []primitive.ObjectID `json:"tickets" bson:"tickets"`
 }
 
+// Ticket ...
 type Ticket struct {
 	ID          primitive.ObjectID `bson:"_id,omitempty"`
 	Title       string             `json:"title" bson:"title"`
@@ -287,7 +290,7 @@ func createColumn(w http.ResponseWriter, r *http.Request) {
 	newColumn.ID = res.InsertedID.(primitive.ObjectID)
 
 	// update board
-	update := bson.D{{"$set", bson.D{{"columns", append(board.Columns, newColumn.ID)}}}}
+	update := bson.D{primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "columns", Value: append(board.Columns, newColumn.ID)}}}}
 	err = boardsCollection.FindOneAndUpdate(ctx, filter, update).Decode(&board)
 	if err != nil {
 		log.Println(err.Error())
@@ -366,7 +369,7 @@ func createTicket(w http.ResponseWriter, r *http.Request) {
 	newTicket.ID = res.InsertedID.(primitive.ObjectID)
 
 	// update column
-	update := bson.D{{"$set", bson.D{{"tickets", append(column.Tickets, newTicket.ID)}}}}
+	update := bson.D{primitive.E{Key: "$set", Value: bson.D{primitive.E{Key: "tickets", Value: append(column.Tickets, newTicket.ID)}}}}
 	err = columnsCollection.FindOneAndUpdate(ctx, filter, update).Decode(&column)
 	if err != nil {
 		log.Println(err.Error())
