@@ -59,28 +59,22 @@ class Board extends Component {
      * retrieve a list of signed in users github repos
      */
     retrieveRepos() {
-        console.log("populating repos from board component");
         fetch("http://localhost:3000/api/repos", {
             method: 'GET',
             mode: 'cors',
             headers: {
                 'Accept': 'application/json; charset=UTF-8',
-            }}).then((response) => {
-                console.log("response");
-                console.log(response);
+            }
+        }).then((response) => {
+            // error
+            if (!response.ok) return;
 
-                // error
-                if (!response.ok) return;
-
-                // if response is okay, read data
-                response.json().then(data => {
-                    console.log("data");
-                    console.log(data);
-
-                    // update store
-                    this.props.setRepoList(data);
-                });   
-            });
+            // if response is okay, read data
+            response.json().then(data => {
+                // update store
+                this.props.setRepoList(data);
+            });   
+        });
     }
 
     /**
@@ -292,7 +286,6 @@ class Board extends Component {
         let boardTkts = this.state.board.columns[tktColIndex].tickets.slice(0, this.state.board.columns[tktColIndex].tickets.length);
         let hoveredTktIndex = this.findIndexOfTkt(tktColIndex, tktID);
         if (draggedTktIndex == null || hoveredTktIndex == null) {
-            // console.log("unable to retrieve the column object associated with the provided id");
             return;
         }
 
@@ -364,7 +357,6 @@ class Board extends Component {
     }
 
     addColumn() {
-        console.log("add new column");
         // TODO: add new column feature
     }
 
@@ -374,11 +366,6 @@ class Board extends Component {
                 <div className={"board_header"}>
                     <h1 className={"board_title"}>{this.props.title || "Board Title"}</h1>
                 </div>
-                {/* <Dropdown label={"dd"}>
-                    <p>1</p>
-                    <p>2</p>
-                    <p>3</p>
-                </Dropdown> */}
                 <div className={"board_columns"}>
                     {this.populateColumns(this.state.board.columns)}
                 </div>

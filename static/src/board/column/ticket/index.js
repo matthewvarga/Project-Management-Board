@@ -8,7 +8,6 @@ class Ticket extends Component {
     }
 
     render() {
-        // console.log("rendering ticket");
         return (
             <div className={"ticket " + (this.props.className ? this.props.className : "") }
                 draggable={this.props.draggable}

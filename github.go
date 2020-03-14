@@ -1,11 +1,11 @@
 package main
 
 import (
-	"net/http"
+	"bytes"
+	"encoding/json"
 	"io/ioutil"
 	"log"
-	"encoding/json"
-	"bytes"
+	"net/http"
 )
 
 /**
@@ -17,7 +17,7 @@ func getRepositories(w http.ResponseWriter, r *http.Request, token string) {
 	request, _ := http.NewRequest("GET", "https://api.github.com/user/repos", nil)
 
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", "token " + token)
+	request.Header.Set("Authorization", "token "+token)
 
 	response, err := client.Do(request)
 
@@ -28,14 +28,14 @@ func getRepositories(w http.ResponseWriter, r *http.Request, token string) {
 	defer response.Body.Close()
 
 	body, _ := ioutil.ReadAll(response.Body)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
 
 type Repository struct {
-	Repo string
-	Owner string 
+	Repo  string
+	Owner string
 }
 
 /**
@@ -47,16 +47,16 @@ func getRepositoryCollaborators(w http.ResponseWriter, r *http.Request, token st
 	var repository Repository
 
 	err := json.NewDecoder(r.Body).Decode(&repository)
-	
+
 	if err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	client := http.Client{}
-	request, _ := http.NewRequest("GET", "https://api.github.com/repos/" + repository.Owner + "/" + repository.Repo + "/collaborators", nil)
+	request, _ := http.NewRequest("GET", "https://api.github.com/repos/"+repository.Owner+"/"+repository.Repo+"/collaborators", nil)
 
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", "token " + token)
+	request.Header.Set("Authorization", "token "+token)
 
 	response, err := client.Do(request)
 
@@ -67,7 +67,7 @@ func getRepositoryCollaborators(w http.ResponseWriter, r *http.Request, token st
 	defer response.Body.Close()
 
 	body, _ := ioutil.ReadAll(response.Body)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
@@ -81,16 +81,16 @@ func getBranches(w http.ResponseWriter, r *http.Request, token string) {
 	var repository Repository
 
 	err := json.NewDecoder(r.Body).Decode(&repository)
-	
+
 	if err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	client := http.Client{}
-	request, _ := http.NewRequest("GET", "https://api.github.com/repos/" + repository.Owner + "/" + repository.Repo + "/branches", nil)
+	request, _ := http.NewRequest("GET", "https://api.github.com/repos/"+repository.Owner+"/"+repository.Repo+"/branches", nil)
 
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", "token " + token)
+	request.Header.Set("Authorization", "token "+token)
 
 	response, err := client.Do(request)
 
@@ -101,16 +101,16 @@ func getBranches(w http.ResponseWriter, r *http.Request, token string) {
 	defer response.Body.Close()
 
 	body, _ := ioutil.ReadAll(response.Body)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
 
 type CreateBranchRequest struct {
 	SourceBranch string `json:"sourceBranch"`
-	NewBranch string `json:"newBranch"`
-	Repo string `json:"repo"`
-	Owner string `json:"owner"`
+	NewBranch    string `json:"newBranch"`
+	Repo         string `json:"repo"`
+	Owner        string `json:"owner"`
 }
 
 type GetBranch struct {
@@ -138,14 +138,14 @@ func createBranch(w http.ResponseWriter, r *http.Request, token string) {
 	err := json.NewDecoder(r.Body).Decode(&createBranchRequest)
 
 	if err != nil {
-        http.Error(w, err.Error(), http.StatusBadRequest)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
-	
+
 	client := http.Client{}
-	request, _ := http.NewRequest("GET", "https://api.github.com/repos/" + createBranchRequest.Owner + "/" + createBranchRequest.Repo + "/git/ref/heads/" + createBranchRequest.SourceBranch, nil)
+	request, _ := http.NewRequest("GET", "https://api.github.com/repos/"+createBranchRequest.Owner+"/"+createBranchRequest.Repo+"/git/ref/heads/"+createBranchRequest.SourceBranch, nil)
 
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", "token " + token)
+	request.Header.Set("Authorization", "token "+token)
 
 	response, err := client.Do(request)
 
@@ -163,10 +163,10 @@ func createBranch(w http.ResponseWriter, r *http.Request, token string) {
 	// create a new branch request using new branch name and SHA hash of commit to branch from
 	requestBody := map[string]string{"ref": "refs/heads/" + createBranchRequest.NewBranch, "sha": getBranch.Object.Sha}
 	requestJSON, err := json.Marshal(requestBody)
-	createRequest, _ := http.NewRequest("POST", "https://api.github.com/repos/" + createBranchRequest.Owner + "/" + createBranchRequest.Repo + "/git/refs", bytes.NewBuffer(requestJSON))
+	createRequest, _ := http.NewRequest("POST", "https://api.github.com/repos/"+createBranchRequest.Owner+"/"+createBranchRequest.Repo+"/git/refs", bytes.NewBuffer(requestJSON))
 	createRequest.Header.Set("Content-Type", "application/json")
-	createRequest.Header.Set("Authorization", "token " + token)
-	
+	createRequest.Header.Set("Authorization", "token "+token)
+
 	createResponse, err := client.Do(createRequest)
 
 	if err != nil {
@@ -174,9 +174,9 @@ func createBranch(w http.ResponseWriter, r *http.Request, token string) {
 	}
 
 	defer createResponse.Body.Close()
-	
+
 	body, _ := ioutil.ReadAll(createResponse.Body)
-	
+
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }

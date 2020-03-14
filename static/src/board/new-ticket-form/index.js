@@ -10,35 +10,15 @@ class NewTicketForm extends Component {
     constructor(props) {
         super(props);
 
-        this.mockRepoListData = [
-            "None",
-            "Repo 1",
-            "Repo 2",
-            "Repo 3",
-            "Repo 4"
-        ];
-
-        this.mockBranchData = [
-            "None",
-            "Create New Branch",
-            "Branch 1", 
-            "Branch 2",
-            "Branch 3"
-        ];
-
-        this.mockAssigneeData = [
-            "None",
-            "matthew",
-            "abi",
-            "johnson"
-        ];
-
         this.state = {
             activePage: 0,
             selectedRepoIndex: 0,
             selectedBranchIndex: 0,
             selectedSourceBranchIndex: 0,
-            selectedAssigneeIndex: 0
+            selectedAssigneeIndex: 0,
+            linkBranches: ["None"],
+            sourceBranches: [],
+            contributers: ["None"]
         };
     }
 
@@ -57,36 +37,100 @@ class NewTicketForm extends Component {
         console.log("submit");
     }
 
-    // TODO: retrieve list from server
-    // listRepos() {
-    
-    //     //http://localhost:3000/api/repos 
-    //     // let repos = [];
-    //     // for (let i = 0; i < this.state.repoList.length; i++) {
-    //     //     repos.push(
-    //     //         <p>{this.state.repoList[i]}</p>
-    //     //     )
-    //     // }
-    //     return this.state.repoList;
-    // }
-
-    listBranches() {
-        return this.mockBranchData;
-    }
-
-    listUsers() {
-        return this.mockAssigneeData;
-    }
-
+    /**
+     * event handler for when user selects a repository from teh dropdown.
+     * If the option selected is a valid repository, it queries the endpoint to 
+     * retrieve a list of branches associated with the repository.
+     * @param {*} e - event
+     * @param {*} i - index of the selected repository within the dropdown
+     */
     selectRepo(e, i) {
-        let branchIndex = this.state.selectedBranchIndex;
-        let sourceIndex = this.state.selectedSourceBranchIndex;
-        let assigneeIndex = this.state.selectedAssigneeIndex;
+        // retrieve list of branches for the repo
+        if(i > 0) {
+            // minus 1 since we prepend "None" in dropdown
+            let repo = this.props.repoList[i-1].name;
+            let owner = this.props.repoList[i-1].owner.login;
+            this.retrieveBranches(repo, owner);
+            this.retrieveContributers(repo, owner);
+        }
+        
         this.setState({
             selectedRepoIndex: i,
-            selectedBranchIndex: (i == 0) ? 0: branchIndex,
-            selectedSourceBranchIndex: (i == 0) ? 0: sourceIndex,
-            selectedAssigneeIndex: (i == 0) ? 0: assigneeIndex
+            selectedBranchIndex: 0,
+            selectedSourceBranchIndex: 0,
+            selectedAssigneeIndex: 0
+        });
+    }
+
+    /**
+     * provided a repository name and owner, it retrieves a list of
+     * associated branches for that repository, and updates the state.
+     * @param {*} repo - repository name
+     * @param {*} owner - owner name
+     */
+    retrieveBranches(repo, owner) {
+        fetch("http://localhost:3000/api/repos/branches", {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json; charset=UTF-8',
+            },
+            body: JSON.stringify({
+                repo: repo,
+                owner: owner
+            })
+        }).then((response) => {
+            // error
+            if (!response.ok) return;
+
+            // if response is okay, read data
+            response.json().then(data => {
+                let repoBranches = ["None", "Create New Branch"];
+                for (let i = 0; i < data.length; i++) {
+                    repoBranches.push(data[i].name);
+                }
+                let sourceBranches = repoBranches.slice(2, repoBranches.length);
+
+                this.setState({
+                    linkBranches: repoBranches,
+                    sourceBranches: sourceBranches
+                });
+            });   
+        });
+    }
+
+    /**
+     * provided a repository name and owner, it retrieves a list of
+     * contributers for that repository, and updates the state.
+     * @param {*} repo - repository name
+     * @param {*} owner - owner name
+     */
+    retrieveContributers(repo, owner) {
+        fetch("http://localhost:3000/api/repos/users", {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json; charset=UTF-8',
+            },
+            body: JSON.stringify({
+                repo: repo,
+                owner: owner
+            })
+        }).then((response) => {
+            // error
+            if (!response.ok) return;
+
+            // if response is okay, read data
+            response.json().then(data => {
+                let contributers = ["None"];
+                for (let i = 0; i < data.length; i++) {
+                    contributers.push(data[i].login);
+                }
+
+                this.setState({
+                    contributers: contributers
+                });
+            });   
         });
     }
 
@@ -147,7 +191,7 @@ class NewTicketForm extends Component {
                             disabled={this.state.selectedRepoIndex == 0}
                             onSelectItem={(e, i) => this.selectBranch(e, i)}
                             activeIndex={this.state.selectedBranchIndex}>
-                            {this.listBranches()}
+                            {this.state.linkBranches}
                         </Dropdown>
                     </div>
 
@@ -161,7 +205,7 @@ class NewTicketForm extends Component {
                                 disabled={this.state.selectedBranchIndex != 1}
                                 onSelectItem={(e, i) => {}}
                                 activeIndex={0}>
-                                {this.listBranches()}
+                                {this.state.sourceBranches}
                             </Dropdown>
                         </div>
 
@@ -194,7 +238,7 @@ class NewTicketForm extends Component {
                             disabled={this.state.selectedRepoIndex == 0}
                             onSelectItem={(e, i) => this.selectAsignee()}
                             activeIndex={this.state.selectedAssigneeIndex}>
-                            {this.listUsers()}
+                            {this.state.contributers}
                         </Dropdown>
                     </div>
 

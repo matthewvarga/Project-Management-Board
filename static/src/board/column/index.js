@@ -51,8 +51,6 @@ class Column extends Component {
     }
 
     render() {
-
-        // console.log("rendering column");
         return (
             <div className={"column " + (this.props.className ? this.props.className : "") }
                 draggable={this.props.draggable}

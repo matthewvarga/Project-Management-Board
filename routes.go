@@ -50,7 +50,7 @@ func handleRoutes(router *mux.Router) {
 		createBranch(w, r, getToken(r))
 	})
 
-	//GET
+	// POST to retrieve branches for given repo
 	router.HandleFunc("/api/repos/branches", func(w http.ResponseWriter, r *http.Request) {
 		getBranches(w, r, getToken(r))
 	})
