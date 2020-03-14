@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"net/http"
 	"fmt"
+	"log"
 )
 
 /*
@@ -59,9 +60,34 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 
 	http.SetCookie(w, cookie)
 
-	for _, cookieA := range r.Cookies() {
-		fmt.Println("Found a cookie named:", cookieA.Value)
+	// create and execute a response to extract the username using the token
+	request, _ := http.NewRequest("GET", "https://api.github.com/user", nil)
+	request.Header.Set("Content-Type", "application/json")
+	request.Header.Set("Authorization", "token " + t.AccessToken)
+
+	response, err := httpClient.Do(request)
+
+	if err != nil {
+		log.Fatalln(err)
 	}
+
+	defer response.Body.Close()
+
+	var profile ProfileResponse
+	if err := json.NewDecoder(response.Body).Decode(&profile); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+	}
+
+	// set the cookie for the username
+	userCookie := &http.Cookie{
+		Name:  "username",
+		Value: profile.Login,
+		Path:  "/",
+	}
+
+	http.SetCookie(w, userCookie)
+
+	
 
 	// redirect to home page
 	w.Header().Set("Location", "/")
@@ -70,4 +96,8 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 
 type OAuthAccessResponse struct {
 	AccessToken string `json:"access_token"`
+}
+
+type ProfileResponse struct {
+	Login string `json:"login"`
 }
