@@ -35,10 +35,11 @@ func handleRoutes(router *mux.Router) {
 	router.HandleFunc("/api/boards/", createBoard).Methods("POST")
 	router.HandleFunc("/api/boards/{boardID}/columns/", createColumn).Methods("POST")
 	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/", createTicket).Methods("POST")
-	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/{ticketID}", getTicket).Methods("GET")
-	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/", getColumn).Methods("GET")
+	router.HandleFunc("/api/boards/{boardID}/", updateBoard).Methods("PATCH")
 	router.HandleFunc("/api/boards/{boardID}/", getBoard).Methods("GET")
-  
+	router.HandleFunc("/api/boards/{boardID}/", deleteBoard).Methods("DELETE")
+	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/", deleteColumn).Methods("DELETE")
+	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/{ticketID}", deleteTicket).Methods("DELETE")
 	// Handle GitHub OAuth authorization
 	router.HandleFunc("/oauth/redirect", func(w http.ResponseWriter, r *http.Request) {
 		githubAuthorize(w, r, clientID, clientSecret)

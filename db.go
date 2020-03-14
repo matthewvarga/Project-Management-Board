@@ -2,20 +2,22 @@ package main
 
 import (
 	"context"
+	"encoding/json"
+	"errors"
+	"fmt"
+	"io"
 	"log"
+	"net/http"
+	"reflect"
+	"strings"
 	"time"
-    "net/http"
-    "fmt"
-    "errors"
-    "io"
-    "strings"
+
 	"github.com/gorilla/mux"
-    "encoding/json"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
-    "go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 // loadMongoClient initializes a connection to the mongo server running on localhost
@@ -89,437 +91,523 @@ func dbInsertSelectExample(db *mongo.Client) {
 
 // Source: https://www.alexedwards.net/blog/how-to-properly-parse-a-json-request-body
 type malformedRequest struct {
-    status int
-    msg    string
+	status int
+	msg    string
 }
+
 // Source: https://www.alexedwards.net/blog/how-to-properly-parse-a-json-request-body
 func (mr *malformedRequest) Error() string {
-    return mr.msg
+	return mr.msg
 }
+
 // Source: https://www.alexedwards.net/blog/how-to-properly-parse-a-json-request-body
 func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) error {
-    if r.Header.Get("Content-Type") != "" && r.Header.Get("Content-Type") != "application/json" {
-        msg := "Content-Type header is not application/json"
-        return &malformedRequest{status: http.StatusUnsupportedMediaType, msg: msg}
-    }
+	if r.Header.Get("Content-Type") != "" && r.Header.Get("Content-Type") != "application/json" {
+		msg := "Content-Type header is not application/json"
+		return &malformedRequest{status: http.StatusUnsupportedMediaType, msg: msg}
+	}
 
-    r.Body = http.MaxBytesReader(w, r.Body, 1048576)
+	r.Body = http.MaxBytesReader(w, r.Body, 1048576)
 
-    dec := json.NewDecoder(r.Body)
-    dec.DisallowUnknownFields()
+	dec := json.NewDecoder(r.Body)
+	dec.DisallowUnknownFields()
 
-    err := dec.Decode(&dst)
-    if err != nil {
-        var syntaxError *json.SyntaxError
-        var unmarshalTypeError *json.UnmarshalTypeError
+	err := dec.Decode(&dst)
+	if err != nil {
+		var syntaxError *json.SyntaxError
+		var unmarshalTypeError *json.UnmarshalTypeError
 
-        switch {
-        case errors.As(err, &syntaxError):
-            msg := fmt.Sprintf("Request body contains badly-formed JSON (at position %d)", syntaxError.Offset)
-            return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+		switch {
+		case errors.As(err, &syntaxError):
+			msg := fmt.Sprintf("Request body contains badly-formed JSON (at position %d)", syntaxError.Offset)
+			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
 
-        case errors.Is(err, io.ErrUnexpectedEOF):
-            msg := fmt.Sprintf("Request body contains badly-formed JSON")
-            return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+		case errors.Is(err, io.ErrUnexpectedEOF):
+			msg := fmt.Sprintf("Request body contains badly-formed JSON")
+			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
 
-        case errors.As(err, &unmarshalTypeError):
-            msg := fmt.Sprintf("Request body contains an invalid value for the %q field (at position %d)", unmarshalTypeError.Field, unmarshalTypeError.Offset)
-            return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+		case errors.As(err, &unmarshalTypeError):
+			msg := fmt.Sprintf("Request body contains an invalid value for the %q field (at position %d)", unmarshalTypeError.Field, unmarshalTypeError.Offset)
+			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
 
-        case strings.HasPrefix(err.Error(), "json: unknown field "):
-            fieldName := strings.TrimPrefix(err.Error(), "json: unknown field ")
-            msg := fmt.Sprintf("Request body contains unknown field %s", fieldName)
-            return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+		case strings.HasPrefix(err.Error(), "json: unknown field "):
+			fieldName := strings.TrimPrefix(err.Error(), "json: unknown field ")
+			msg := fmt.Sprintf("Request body contains unknown field %s", fieldName)
+			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
 
-        case errors.Is(err, io.EOF):
-            msg := "Request body must not be empty"
-            return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+		case errors.Is(err, io.EOF):
+			msg := "Request body must not be empty"
+			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
 
-        case err.Error() == "http: request body too large":
-            msg := "Request body must not be larger than 1MB"
-            return &malformedRequest{status: http.StatusRequestEntityTooLarge, msg: msg}
+		case err.Error() == "http: request body too large":
+			msg := "Request body must not be larger than 1MB"
+			return &malformedRequest{status: http.StatusRequestEntityTooLarge, msg: msg}
 
-        default:
-            return err
-        }
-    }
+		case strings.HasPrefix(err.Error(), "cannot unmarshal into an ObjectID"):
+			msg := "Request body contains an invalid value for an ID field"
+			return &malformedRequest{status: http.StatusBadRequest, msg: msg}
 
-    if dec.More() {
-        msg := "Request body must only contain a single JSON object"
-        return &malformedRequest{status: http.StatusBadRequest, msg: msg}
-    }
+		default:
+			return err
+		}
+	}
 
-    return nil
+	if dec.More() {
+		msg := "Request body must only contain a single JSON object"
+		return &malformedRequest{status: http.StatusBadRequest, msg: msg}
+	}
+
+	return nil
 }
+
+// Board Object
 type Board struct {
-    ID primitive.ObjectID `bson:"_id,omitempty"`
-    Title string `json:"title" bson:"title"`
-    Columns []primitive.ObjectID `json:"columns" bson:"columns"`
+	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Title   string             `json:"title" bson:"title"`
+	Columns []Column           `json:"columns" bson:"columns"`
 }
 
+// Column Object
 type Column struct {
-    ID primitive.ObjectID `bson:"_id,omitempty"`
-    Title string `json:"title" bson:"title"`
-    BoardID primitive.ObjectID `bson:"board_id"`
-    Tickets []primitive.ObjectID `json:"tickets" bson:"tickets"`
+	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Title   string             `json:"title" bson:"title"`
+	Tickets []Ticket           `json:"tickets" bson:"tickets"`
 }
 
+// Ticket Object
 type Ticket struct {
-    ID primitive.ObjectID `bson:"_id,omitempty"`
-    Title string `json:"title" bson:"title"`
-    Description string `json:"description" bson:"description"`
-    Assignee string `json:"assignee" bson:"assignee"`
-    Points int `json:"points" bson:"points"`
-    BoardID primitive.ObjectID `bson:"board_id"`
-    ColumnID primitive.ObjectID `bson:"column_id"`
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Title       string             `json:"title" bson:"title"`
+	Description string             `json:"description" bson:"description"`
+	Assignee    string             `json:"assignee" bson:"assignee"`
+	Points      int                `json:"points" bson:"points"`
 }
 
 func createBoard(w http.ResponseWriter, r *http.Request) {
-    
-    // parse request body
-    var newBoard Board
-    err := decodeJSONBody(w, r, &newBoard)
-    if err != nil {
-        var mr *malformedRequest
-        if errors.As(err, &mr) {
-            http.Error(w, mr.msg, mr.status)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
-    }
-    newBoard.Columns = []primitive.ObjectID{}
-    
-    // connect to db
-    db, err := loadMongoClient()
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    
-    // insert board
-    boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-    defer cancel()
-    res, err := boardsCollection.InsertOne(ctx, newBoard)
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    
-    // return new board info
-    filter := bson.M{"_id": res.InsertedID}
-	err = boardsCollection.FindOne(ctx, filter).Decode(&newBoard)
+
+	// parse request body
+	var newBoard Board
+	err := decodeJSONBody(w, r, &newBoard)
 	if err != nil {
-        log.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
+		var mr *malformedRequest
+		if errors.As(err, &mr) {
+			http.Error(w, mr.msg, mr.status)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
 	}
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(newBoard)
+	newBoard.ID = primitive.NewObjectID()
+	newBoard.Columns = []Column{}
+
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// insert board
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	_, err = boardsCollection.InsertOne(ctx, newBoard)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// send new board info
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(newBoard)
 }
 
 func createColumn(w http.ResponseWriter, r *http.Request) {
-    
-    // get board id
-    var newColumn Column
-    queryVars := mux.Vars(r)
-    boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
-    if err != nil {
-        http.Error(w, "Invalid Board ID", http.StatusBadRequest)
-        return
-    }
-    
-    // parse request body
-    err = decodeJSONBody(w, r, &newColumn)
-    if err != nil {
-        var mr *malformedRequest
-        if errors.As(err, &mr) {
-            http.Error(w, mr.msg, mr.status)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
-    }
-    newColumn.BoardID = boardID
-    newColumn.Tickets = []primitive.ObjectID{}
-    
-    // connect to db
-    db, err := loadMongoClient()
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    // get board
-    boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
-    filter := bson.M{"_id": boardID}
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-    var board Board
-	err = boardsCollection.FindOne(ctx, filter).Decode(&board)
+
+	// parse query vars
+	var newColumn Column
+	queryVars := mux.Vars(r)
+	boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
 	if err != nil {
-        if err == mongo.ErrNoDocuments {
-            http.Error(w, "The specified Board ID does not exist", http.StatusBadRequest)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
+		http.Error(w, "Invalid Board ID", http.StatusBadRequest)
+		return
 	}
-    
-    // insert column
-    columnsCollection := retrieveMongoCollection(db, "team_zero", "columns")
-    res, err := columnsCollection.InsertOne(ctx, newColumn)
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    newColumn.ID = res.InsertedID.(primitive.ObjectID)
-    
-    // update board
-    update := bson.D{{"$set", bson.D{{"columns", append(board.Columns, newColumn.ID)}}}}
-    err = boardsCollection.FindOneAndUpdate(ctx, filter, update).Decode(&board)
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-    }
-    
-    // return new column info
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(newColumn)
+
+	// parse request body
+	err = decodeJSONBody(w, r, &newColumn)
+	if err != nil {
+		var mr *malformedRequest
+		if errors.As(err, &mr) {
+			http.Error(w, mr.msg, mr.status)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+	newColumn.ID = primitive.NewObjectID()
+	newColumn.Tickets = []Ticket{}
+
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// add column to board
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	filter := bson.D{primitive.E{Key: "_id", Value: boardID}}
+	update := bson.D{primitive.E{Key: "$push", Value: bson.D{primitive.E{Key: "columns", Value: newColumn}}}}
+	opts := options.FindOneAndUpdate().SetReturnDocument(1)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var board Board
+	err = boardsCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&board)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "The specified Board ID does not exist", http.StatusBadRequest)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// send updated board info
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(board)
 }
 
 func createTicket(w http.ResponseWriter, r *http.Request) {
-    
-    // get board/column ids
-    var newTicket Ticket
-    queryVars := mux.Vars(r)
-    boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
-    if err != nil {
-        http.Error(w, "Invalid Board ID", http.StatusBadRequest)
-        return
-    }
-    columnID, err := primitive.ObjectIDFromHex(queryVars["columnID"])
-    if err != nil {
-        http.Error(w, "Invalid Column ID", http.StatusBadRequest)
-        return
-    }
-    
-    // parse request body
-    err = decodeJSONBody(w, r, &newTicket)
-    if err != nil {
-        var mr *malformedRequest
-        if errors.As(err, &mr) {
-            http.Error(w, mr.msg, mr.status)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
-    }
-    newTicket.BoardID = boardID
-    newTicket.ColumnID = columnID
-    
-    // connect to db
-    db, err := loadMongoClient()
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    
-    // get column
-    columnsCollection := retrieveMongoCollection(db, "team_zero", "columns")
-    filter := bson.M{"_id": columnID, "board_id": boardID}
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-    var column Column
-	err = columnsCollection.FindOne(ctx, filter).Decode(&column)
-	if err != nil {
-        if err == mongo.ErrNoDocuments {
-            http.Error(w, "The specified Board/Column ID combination does not exist", http.StatusBadRequest)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
-	}
-    
-    // insert ticket
-    ticketsCollection := retrieveMongoCollection(db, "team_zero", "tickets")
-    res, err := ticketsCollection.InsertOne(ctx, newTicket)
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    newTicket.ID = res.InsertedID.(primitive.ObjectID)
-    
-    // update column
-    update := bson.D{{"$set", bson.D{{"tickets", append(column.Tickets, newTicket.ID)}}}}
-    err = columnsCollection.FindOneAndUpdate(ctx, filter, update).Decode(&column)
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-    }
-        
-    // return new ticket info
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(newTicket)
-}
 
-func getTicket(w http.ResponseWriter, r *http.Request) {
-    
-    // parse request body
-    queryVars := mux.Vars(r)
-    boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
-    if err != nil {
-        http.Error(w, "Invalid Board ID", http.StatusBadRequest)
-        return
-    }
-    columnID, err := primitive.ObjectIDFromHex(queryVars["columnID"])
-    if err != nil {
-        http.Error(w, "Invalid Column ID", http.StatusBadRequest)
-        return
-    }
-    ticketID, err := primitive.ObjectIDFromHex(queryVars["ticketID"])
-    if err != nil {
-        http.Error(w, "Invalid Column ID", http.StatusBadRequest)
-        return
-    }
-    
-    // connect to db
-    db, err := loadMongoClient()
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    
-    // get column
-    columnsCollection := retrieveMongoCollection(db, "team_zero", "columns")
-    filter := bson.M{"_id": columnID, "board_id": boardID}
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-    var column Column
-	err = columnsCollection.FindOne(ctx, filter).Decode(&column)
+	// parse query vars
+	var newTicket Ticket
+	queryVars := mux.Vars(r)
+	boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
 	if err != nil {
-        if err == mongo.ErrNoDocuments {
-            http.Error(w, "The specified Board/Column ID combination does not exist", http.StatusBadRequest)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
+		http.Error(w, "Invalid Board ID", http.StatusBadRequest)
+		return
+	}
+	columnID, err := primitive.ObjectIDFromHex(queryVars["columnID"])
+	if err != nil {
+		http.Error(w, "Invalid Column ID", http.StatusBadRequest)
+		return
+	}
+	newTicket.ID = primitive.NewObjectID()
+
+	// parse request body
+	err = decodeJSONBody(w, r, &newTicket)
+	if err != nil {
+		var mr *malformedRequest
+		if errors.As(err, &mr) {
+			http.Error(w, mr.msg, mr.status)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
 	}
 
-    // get ticket
-    var ticket Ticket
-    ticketsCollection := retrieveMongoCollection(db, "team_zero", "tickets")
-    filter = bson.M{"_id": ticketID, "column_id": columnID}
-    err = ticketsCollection.FindOne(ctx, filter).Decode(&ticket)
-    if err != nil {
-        if err == mongo.ErrNoDocuments {
-            http.Error(w, "The specified Ticket ID does not exist", http.StatusBadRequest)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
-    }
-    
-    // send result
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(ticket)
-}
-
-func getColumn(w http.ResponseWriter, r *http.Request) {
-    
-    // parse request body
-    queryVars := mux.Vars(r)
-    boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
-    if err != nil {
-        http.Error(w, "Invalid Board ID", http.StatusBadRequest)
-        return
-    }
-    columnID, err := primitive.ObjectIDFromHex(queryVars["columnID"])
-    if err != nil {
-        http.Error(w, "Invalid Column ID", http.StatusBadRequest)
-        return
-    }
-    
-    // connect to db
-    db, err := loadMongoClient()
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    
-    // get column
-    columnsCollection := retrieveMongoCollection(db, "team_zero", "columns")
-    filter := bson.M{"_id": columnID, "board_id": boardID}
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-    var column Column
-	err = columnsCollection.FindOne(ctx, filter).Decode(&column)
+	// connect to db
+	db, err := loadMongoClient()
 	if err != nil {
-        if err == mongo.ErrNoDocuments {
-            http.Error(w, "The specified Board/Column ID combination does not exist", http.StatusBadRequest)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
 	}
-    
-    // send result
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(column)
+
+	// add ticket to board
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	filter := bson.D{primitive.E{Key: "_id", Value: boardID}, primitive.E{Key: "columns._id", Value: columnID}}
+	update := bson.D{primitive.E{Key: "$push", Value: bson.D{primitive.E{Key: "columns.$.tickets", Value: newTicket}}}}
+	opts := options.FindOneAndUpdate().SetReturnDocument(1)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var board Board
+	err = boardsCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&board)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "The specified Board/Column ID combination does not exist", http.StatusBadRequest)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// return updated board info
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(board)
 }
 
 func getBoard(w http.ResponseWriter, r *http.Request) {
-    
-    // parse request body
-    queryVars := mux.Vars(r)
-    boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
-    if err != nil {
-        http.Error(w, "Invalid Board ID", http.StatusBadRequest)
-        return
-    }
 
-    // connect to db
-    db, err := loadMongoClient()
-    if err != nil {
-        log.Println(err.Error())
-        http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        return
-    }
-    
-    // get board
-    boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
-    filter := bson.M{"_id": boardID}
-    ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	// parse query vars
+	queryVars := mux.Vars(r)
+	boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
+	if err != nil {
+		http.Error(w, "Invalid Board ID", http.StatusBadRequest)
+		return
+	}
+
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// get board
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	filter := bson.M{"_id": boardID}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-    var board Board
+	var board Board
 	err = boardsCollection.FindOne(ctx, filter).Decode(&board)
 	if err != nil {
-        if err == mongo.ErrNoDocuments {
-            http.Error(w, "The specified Board ID does not exist", http.StatusBadRequest)
-        } else {
-            log.Println(err.Error())
-            http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
-        }
-        return
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "The specified Board ID does not exist", http.StatusBadRequest)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
 	}
-    
-    // send result
-    w.Header().Set("Content-Type", "application/json")
-    json.NewEncoder(w).Encode(board)
+
+	// send result
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(board)
+}
+
+func updateBoard(w http.ResponseWriter, r *http.Request) {
+
+	// parse query vars
+	queryVars := mux.Vars(r)
+	boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
+	if err != nil {
+		http.Error(w, "Invalid Board ID", http.StatusBadRequest)
+		return
+	}
+
+	// parse request body
+	var newBoard Board
+	err = decodeJSONBody(w, r, &newBoard)
+	if err != nil {
+		var mr *malformedRequest
+		if errors.As(err, &mr) {
+			http.Error(w, mr.msg, mr.status)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	if boardID != newBoard.ID {
+		http.Error(w, "The Board ID being updated does not match the provided Board's ID", http.StatusBadRequest)
+		return
+	}
+
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// get board
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	filter := bson.M{"_id": boardID}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var board Board
+	err = boardsCollection.FindOne(ctx, filter).Decode(&board)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "The specified Board ID does not exist", http.StatusBadRequest)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// check that the board has the same column and ticket ids
+	oldCIDs := make(map[primitive.ObjectID]bool)
+	oldTIDs := make(map[primitive.ObjectID]bool)
+	for _, c := range board.Columns {
+		oldCIDs[c.ID] = true
+		for _, t := range c.Tickets {
+			oldTIDs[t.ID] = true
+		}
+	}
+	newCIDs := make(map[primitive.ObjectID]bool)
+	newTIDs := make(map[primitive.ObjectID]bool)
+	for _, c := range newBoard.Columns {
+		newCIDs[c.ID] = true
+		for _, t := range c.Tickets {
+			newTIDs[t.ID] = true
+		}
+	}
+	if !reflect.DeepEqual(oldCIDs, newCIDs) || !reflect.DeepEqual(oldTIDs, newTIDs) {
+		http.Error(w, "The Column and Ticket IDs provided do not match the Board's IDs", http.StatusBadRequest)
+		return
+	}
+
+	// replace the board
+	_, err = boardsCollection.ReplaceOne(ctx, filter, &newBoard)
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// send result
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(newBoard)
+}
+
+func deleteTicket(w http.ResponseWriter, r *http.Request) {
+
+	// get board/column/ticket ids
+	queryVars := mux.Vars(r)
+	boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
+	if err != nil {
+		http.Error(w, "Invalid Board ID", http.StatusBadRequest)
+		return
+	}
+	columnID, err := primitive.ObjectIDFromHex(queryVars["columnID"])
+	if err != nil {
+		http.Error(w, "Invalid Column ID", http.StatusBadRequest)
+		return
+	}
+	ticketID, err := primitive.ObjectIDFromHex(queryVars["ticketID"])
+	if err != nil {
+		http.Error(w, "Invalid Ticket ID", http.StatusBadRequest)
+		return
+	}
+
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+	// delete ticket from board
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	filter := bson.D{primitive.E{Key: "_id", Value: boardID}, primitive.E{Key: "columns._id", Value: columnID}, primitive.E{Key: "columns.tickets._id", Value: ticketID}}
+	update := bson.D{primitive.E{Key: "$pull", Value: bson.D{primitive.E{Key: "columns.$.tickets", Value: bson.D{primitive.E{Key: "_id", Value: ticketID}}}}}}
+	opts := options.FindOneAndUpdate().SetReturnDocument(1)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var board Board
+	err = boardsCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&board)
+	//err = boardsCollection.FindOne(ctx, filter).Decode(&board)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "The specified Board/Column/Ticket ID combination does not exist", http.StatusBadRequest)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// return success
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(board)
+}
+
+func deleteColumn(w http.ResponseWriter, r *http.Request) {
+
+	// get board/column ids
+	queryVars := mux.Vars(r)
+	boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
+	if err != nil {
+		http.Error(w, "Invalid Board ID", http.StatusBadRequest)
+		return
+	}
+	columnID, err := primitive.ObjectIDFromHex(queryVars["columnID"])
+	if err != nil {
+		http.Error(w, "Invalid Column ID", http.StatusBadRequest)
+		return
+	}
+
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// delete column
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	filter := bson.D{primitive.E{Key: "_id", Value: boardID}, primitive.E{Key: "columns._id", Value: columnID}}
+	update := bson.D{primitive.E{Key: "$pull", Value: bson.D{primitive.E{Key: "columns", Value: bson.D{primitive.E{Key: "_id", Value: columnID}}}}}}
+	opts := options.FindOneAndUpdate().SetReturnDocument(1)
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var board Board
+	err = boardsCollection.FindOneAndUpdate(ctx, filter, update, opts).Decode(&board)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "The specified Board/Column ID combination does not exist", http.StatusBadRequest)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// return success
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(board)
+}
+
+func deleteBoard(w http.ResponseWriter, r *http.Request) {
+
+	// get board id
+	queryVars := mux.Vars(r)
+	boardID, err := primitive.ObjectIDFromHex(queryVars["boardID"])
+	if err != nil {
+		http.Error(w, "Invalid Board ID", http.StatusBadRequest)
+		return
+	}
+
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// delete board
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	filter := bson.D{primitive.E{Key: "_id", Value: boardID}}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var board Board
+	err = boardsCollection.FindOneAndDelete(ctx, filter).Decode(&board)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			http.Error(w, "The specified Board ID does not exist", http.StatusBadRequest)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// return success
+	w.Header().Set("Content-Type", "application/json")
 }
