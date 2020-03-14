@@ -51,11 +51,12 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	}
 
 
-	// set the cookie for the OAuth token (needs to be secured!!!!)
+	// set the cookie for the OAuth token
 	cookie := &http.Cookie{
 		Name:  "token",
 		Value: t.AccessToken,
 		Path:  "/",
+		HttpOnly: true,
 	}
 
 	http.SetCookie(w, cookie)
