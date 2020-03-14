@@ -33,6 +33,7 @@ func getRepositories(w http.ResponseWriter, r *http.Request, token string) {
 	w.Write(body)
 }
 
+// Repository ...
 type Repository struct {
 	Repo  string
 	Owner string
@@ -106,6 +107,7 @@ func getBranches(w http.ResponseWriter, r *http.Request, token string) {
 	w.Write(body)
 }
 
+// CreateBranchRequest ...
 type CreateBranchRequest struct {
 	SourceBranch string `json:"sourceBranch"`
 	NewBranch    string `json:"newBranch"`
@@ -113,6 +115,7 @@ type CreateBranchRequest struct {
 	Owner        string `json:"owner"`
 }
 
+// GetBranch ...
 type GetBranch struct {
 	Ref    string `json:"ref"`
 	NodeID string `json:"node_id"`
