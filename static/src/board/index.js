@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import {setRepoList, setBoard} from "../actions/index";
 import Column from "./column/index";
-import Dropdown from "../dropdown/index";
 import './styles';
 
 class Board extends Component {
@@ -20,6 +19,14 @@ class Board extends Component {
         if (!this.props.repoList) this.retrieveRepos();
     }
 
+    componentDidUpdate(prevProps, prevState) {
+        if (prevProps.board != this.props.board) {
+            this.setState({
+                board: this.props.board
+            });
+        }
+    }
+
     updateBoardDB() {
         fetch("http://localhost:3000/api/boards/5e6aca0522a1867fe4086dbd/", {
             method: 'PATCH',
@@ -32,12 +39,6 @@ class Board extends Component {
         }).then((response) => {
             // error
             if (!response.ok) return;
-
-            // // if response is okay, read data
-            // response.json().then(data => {
-            //     console.log("data");
-            //     console.log(data);
-            // });   
         });
     }
 
@@ -109,6 +110,7 @@ class Board extends Component {
                 <Column className={"board_column"} 
                     title={board.columns[i].title}
                     tickets={board.columns[i].tickets || []}
+                    colID={board.columns[i].id}
                     draggable={"true"} 
                     onDragStart={(e) => {this.colDragStart(e, colID)}}
                     onDragOver={(e) => {this.colDragOver(e, colID)}}
@@ -239,7 +241,6 @@ class Board extends Component {
             board.columns[hoveredColIndex].tickets = newColTkts;
             // TODO: update db with the new columns
             // this.props.setBoard(board);
-            // console.log("testy");
 
 
             // The tkt drag end event is not being captured properly, so this is here temporarily

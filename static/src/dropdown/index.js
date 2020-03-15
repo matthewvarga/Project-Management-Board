@@ -47,6 +47,10 @@ class Dropdown extends Component {
         });
     }
 
+    getValue() {
+        return this.props.children[this.state.activeIndex];
+    }
+
     populateItems() {
         let result = [];
         let els = [];

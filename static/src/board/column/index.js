@@ -10,6 +10,8 @@ class Column extends Component {
     constructor(props) {
         super(props);
 
+        this.modalRef = React.createRef();
+
         this.state = {
             tickets: props.tickets || []
         }
@@ -23,6 +25,10 @@ class Column extends Component {
                 tickets: this.props.tickets
             })
         }
+    }
+
+    closeCreateTicketModal() {
+        this.modalRef.current.closeModal();
     }
 
     populateTickets(tickets) {
@@ -65,9 +71,9 @@ class Column extends Component {
                     </div>
                     <div className={"column_header_container"}>
                         {/* <IconPlus className={"column_plus_icon"} onClick={(e) => this.addTicket(e)}/> */}
-                        <Modal button={<IconPlus className={"modal_plus_icon"} onClick={() => {}}/>}
+                        <Modal ref={this.modalRef} button={<IconPlus className={"modal_plus_icon"} onClick={() => {}}/>}
                             title={"create new ticket"}>
-                            <NewTicketForm/>
+                            <NewTicketForm colID={this.props.colID} onSubmitTicket={() => this.closeCreateTicketModal()}/>
                         </Modal>
                     </div>
                 </div>
