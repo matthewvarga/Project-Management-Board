@@ -20,6 +20,35 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/readpref"
 )
 
+// Source: https://www.alexedwards.net/blog/how-to-properly-parse-a-json-request-body
+type malformedRequest struct {
+	status int
+	msg    string
+}
+
+// Board Object
+type Board struct {
+	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Title   string             `json:"title" bson:"title"`
+	Columns []Column           `json:"columns" bson:"columns"`
+}
+
+// Column Object
+type Column struct {
+	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Title   string             `json:"title" bson:"title"`
+	Tickets []Ticket           `json:"tickets" bson:"tickets"`
+}
+
+// Ticket Object
+type Ticket struct {
+	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Title       string             `json:"title" bson:"title"`
+	Description string             `json:"description" bson:"description"`
+	Assignee    string             `json:"assignee" bson:"assignee"`
+	Points      int                `json:"points" bson:"points"`
+}
+
 // loadMongoClient initializes a connection to the mongo server running on localhost
 // and returns a pointer to its client.
 func loadMongoClient() (*mongo.Client, error) {
@@ -90,12 +119,6 @@ func dbInsertSelectExample(db *mongo.Client) {
 }
 
 // Source: https://www.alexedwards.net/blog/how-to-properly-parse-a-json-request-body
-type malformedRequest struct {
-	status int
-	msg    string
-}
-
-// Source: https://www.alexedwards.net/blog/how-to-properly-parse-a-json-request-body
 func (mr *malformedRequest) Error() string {
 	return mr.msg
 }
@@ -158,29 +181,6 @@ func decodeJSONBody(w http.ResponseWriter, r *http.Request, dst interface{}) err
 	}
 
 	return nil
-}
-
-// Board Object
-type Board struct {
-	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Title   string             `json:"title" bson:"title"`
-	Columns []Column           `json:"columns" bson:"columns"`
-}
-
-// Column Object
-type Column struct {
-	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Title   string             `json:"title" bson:"title"`
-	Tickets []Ticket           `json:"tickets" bson:"tickets"`
-}
-
-// Ticket Object
-type Ticket struct {
-	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Title       string             `json:"title" bson:"title"`
-	Description string             `json:"description" bson:"description"`
-	Assignee    string             `json:"assignee" bson:"assignee"`
-	Points      int                `json:"points" bson:"points"`
 }
 
 func createBoard(w http.ResponseWriter, r *http.Request) {

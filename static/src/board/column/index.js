@@ -38,7 +38,7 @@ class Column extends Component {
                     onDragStart={(e) => {this.props.onTktDragStart(e, tkt.id)}}
                     onDragOver={(e) => {this.props.onTktDragOver(e, tkt.id)}}
                     onDragLeave={(e) => {this.props.onTktDragLeave(e, tkt.id)}}
-                    onDragEnd={(e) => {this.props.onTktDragEnd(e, tkt.id)}}
+                    onDragEnd={(e) => this.props.onTktDragEnd(e, tkt.id)}
                     key={i}>
                 </Ticket>
             )
@@ -60,7 +60,7 @@ class Column extends Component {
             >
                 <div className={"column_header"}>
                     <div className={"column_header_container"}>
-                        <span className={"column_num_tickets"}>{this.state.tickets ? "?" : this.state.tickets.length}</span>
+                        <span className={"column_num_tickets"}>{this.state.tickets ? this.state.tickets.length: "?"}</span>
                         <h3 className={"column_title"}>{this.props.title || "Board Title"}</h3>
                     </div>
                     <div className={"column_header_container"}>

@@ -4,3 +4,10 @@ export function setRepoList(repoList) {
         repoList
     }
 };
+
+export function setBoard(board) {
+    return {
+        type: 'SET_BOARD',
+        board
+    }
+};
