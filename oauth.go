@@ -7,6 +7,16 @@ import (
 	"net/http"
 )
 
+// OAuthAccessResponse ...
+type OAuthAccessResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
+// ProfileResponse ...
+type ProfileResponse struct {
+	Login string `json:"login"`
+}
+
 /*
 Full credits to https://www.sohamkamani.com/blog/golang/2018-06-24-oauth-with-golang/ for providing the tutorial
 to perform a GitHub OAuth Flow in Go. Setting up the HTTP request and headers was mostly borrowed, but certain aspects
@@ -50,11 +60,12 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-	// set the cookie for the OAuth token (needs to be secured!!!!)
+	// set the cookie for the OAuth token
 	cookie := &http.Cookie{
-		Name:  "token",
-		Value: t.AccessToken,
-		Path:  "/",
+		Name:     "token",
+		Value:    t.AccessToken,
+		Path:     "/",
+		HttpOnly: true,
 	}
 
 	http.SetCookie(w, cookie)
@@ -89,14 +100,4 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	// redirect to home page
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusFound)
-}
-
-// OAuthAccessResponse ...
-type OAuthAccessResponse struct {
-	AccessToken string `json:"access_token"`
-}
-
-// ProfileResponse ...
-type ProfileResponse struct {
-	Login string `json:"login"`
 }
