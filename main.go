@@ -71,7 +71,7 @@ func main() {
 	// serve the webpage
 	srv := &http.Server{
 		Handler: handlers.CORS(originsOk, headersOk, methodsOk)(router),
-		Addr:    "project-management.tools",
+		Addr:    "project-management.tools:8080",
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
