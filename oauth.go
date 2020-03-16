@@ -2,10 +2,20 @@ package main
 
 import (
 	"encoding/json"
-	"net/http"
 	"fmt"
 	"log"
+	"net/http"
 )
+
+// OAuthAccessResponse ...
+type OAuthAccessResponse struct {
+	AccessToken string `json:"access_token"`
+}
+
+// ProfileResponse ...
+type ProfileResponse struct {
+	Login string `json:"login"`
+}
 
 /*
 Full credits to https://www.sohamkamani.com/blog/golang/2018-06-24-oauth-with-golang/ for providing the tutorial
@@ -50,12 +60,12 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 		w.WriteHeader(http.StatusBadRequest)
 	}
 
-
-	// set the cookie for the OAuth token (needs to be secured!!!!)
+	// set the cookie for the OAuth token
 	cookie := &http.Cookie{
-		Name:  "token",
-		Value: t.AccessToken,
-		Path:  "/",
+		Name:     "token",
+		Value:    t.AccessToken,
+		Path:     "/",
+		HttpOnly: true,
 	}
 
 	http.SetCookie(w, cookie)
@@ -63,7 +73,7 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	// create and execute a response to extract the username using the token
 	request, _ := http.NewRequest("GET", "https://api.github.com/user", nil)
 	request.Header.Set("Content-Type", "application/json")
-	request.Header.Set("Authorization", "token " + t.AccessToken)
+	request.Header.Set("Authorization", "token "+t.AccessToken)
 
 	response, err := httpClient.Do(request)
 
@@ -87,17 +97,7 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 
 	http.SetCookie(w, userCookie)
 
-	
-
 	// redirect to home page
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusFound)
-}
-
-type OAuthAccessResponse struct {
-	AccessToken string `json:"access_token"`
-}
-
-type ProfileResponse struct {
-	Login string `json:"login"`
 }

@@ -16,12 +16,9 @@ class Dropdown extends Component {
     componentDidUpdate(prevProps, prevState) {
         // deep prop changes dont propogate to force statechange,
         // so have to manually check and update
-        console.log("dropdown props changed");
-        if(prevProps != this.props || prevProps.children != this.props.children) {
-            console.log("old children length: " + prevProps.children.length);
-            console.log("new children length: " + this.props.children.length);
+        if((prevProps != this.props) || (prevProps.children != this.props.children)) {
             this.setState({
-                activeIndex: this.props.activeIndex != undefined ? this.props.activeIndex : prevProps.activeIndex,
+                activeIndex: (this.props.activeIndex != undefined && this.props.activeIndex < this.props.children.length) ? this.props.activeIndex : prevProps.activeIndex,
                 disabled: this.props.disabled
             });
         }
@@ -48,6 +45,10 @@ class Dropdown extends Component {
             activeIndex: index,
             isOpen: false
         });
+    }
+
+    getValue() {
+        return this.props.children[this.state.activeIndex];
     }
 
     populateItems() {

@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
 import { connect } from 'react-redux';
-import {setRepoList} from "../actions/index";
+import {setRepoList, setBoard} from "../actions/index";
 import Column from "./column/index";
-import Dropdown from "../dropdown/index";
 import './styles';
 
 class Board extends Component {
@@ -47,55 +46,140 @@ class Board extends Component {
             ]
         }
         this.state = {
-            board: mockBoardData,
             draggedTicketID: null,
-            draggedColumnID: null
+            draggedColumnID: null,
+            board:null
         };
 
+        if (!this.props.board) this.retrieveBoard();
         if (!this.props.repoList) this.retrieveRepos();
+    }
+
+    componentDidUpdate(prevProps, prevState) {
+        console.log("update");
+        if (JSON.stringify(prevProps.board) != JSON.stringify(this.props.board)) {
+            this.setState({
+                board: this.props.board
+            });
+        }
+    }
+
+    addColumn() {
+        // TODO: add new column feature
+        fetch("http://project-management.tools/api/boards/" + this.props.board.id + "/columns/", {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: "test"
+            })
+        }).then((response) => {
+
+            console.log("response");
+            console.log(response);
+            // error
+            if (!response.ok) return;
+
+            // if response is okay, read data
+            response.json().then(data => {
+                // update store
+                console.log("data");
+                console.log(data)
+
+                this.props.setBoard(data);
+                this.setState({
+                    board: data
+                });
+            });   
+        });
+    }
+
+    updateBoardDB() {
+        fetch("http://project-management.tools/api/boards/5e6aca0522a1867fe4086dbd/", {
+            method: 'PATCH',
+            mode: 'cors',
+            headers: {
+                // 'Content-Type': 'application/json; charset=UTF-8',
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(this.props.board)
+        }).then((response) => {
+            // error
+            if (!response.ok) return;
+        });
+    }
+
+    retrieveBoard() {
+        fetch("http://project-management.tools/api/boards/5e6aca0522a1867fe4086dbd/", {
+            method: 'GET',
+            mode: 'cors',
+            headers: {
+                'Accept': 'application/json; charset=UTF-8',
+            }
+        }).then((response) => {
+            // error
+            if (!response.ok) return;
+
+            // if response is okay, read data
+            response.json().then(data => {
+                // update store
+                this.props.setBoard(data);
+                this.setState({
+                    board: data
+                });
+            });   
+        });
     }
 
     /**
      * retrieve a list of signed in users github repos
      */
     retrieveRepos() {
-        console.log("populating repos from board component");
         fetch("http://project-management.tools/api/repos", {
             method: 'GET',
             mode: 'cors',
             headers: {
                 'Accept': 'application/json; charset=UTF-8',
-            }}).then((response) => {
-                console.log("response");
-                console.log(response);
+            }
+        }).then((response) => {
+            // error
+            if (!response.ok) return;
 
-                // error
-                if (!response.ok) return;
-
-                // if response is okay, read data
-                response.json().then(data => {
-                    console.log("data");
-                    console.log(data);
-
-                    // update store
-                    this.props.setRepoList(data);
-                });   
-            });
+            // if response is okay, read data
+            response.json().then(data => {
+                // update store
+                this.props.setRepoList(data);
+            });   
+        });
     }
 
     /**
      * Takes the list of coloumns, and wraps them with a container for drag handling.
-     * @param {*} columns 
      */
-    populateColumns(columns) {
+    populateColumns(stateBoard) {
+        let board = stateBoard ? stateBoard : {}; 
         let cols = [];
-        let len = columns.length;
+
+        // no columns
+        if(!board || !board.columns || !board.columns.length) {
+            cols.push(
+                <div className={"add_board_column"} key={len+1} onClick={() => {this.addColumn()}}>
+                    Add Column
+                </div>
+            )
+            return cols;
+        }
+
+        let len = board.columns.length;
         for(let i = 0; i < len; i++) {
-            let colID = columns[i].id;
+            let colID = board.columns[i].id;
             cols.push (
-                <Column className={"board_column"} 
-                    title={columns[i].title}
-                    tickets={columns[i].tickets || []}
+                <Column 
+                    className={"board_column"}
+                    colObj={board.columns[i]}
+                    boardID={board.id}
                     draggable={"true"} 
                     onDragStart={(e) => {this.colDragStart(e, colID)}}
                     onDragOver={(e) => {this.colDragOver(e, colID)}}
@@ -143,8 +227,8 @@ class Board extends Component {
      * @param {*} colID - the id of the column we are trying to find
      */
     findIndexOfCol(colID) {
-        for(let i = 0; i < this.state.board.columns.length; i++) {
-            let col = this.state.board.columns[i];
+        for(let i = 0; i < this.props.board.columns.length; i++) {
+            let col = this.props.board.columns[i];
             if(col.id == colID) {
                 return i;
             }
@@ -159,8 +243,8 @@ class Board extends Component {
      * @param {*} tktID - the id of the ticket
      */
     findIndexOfTkt(colIndex, tktID) {
-        for(let i = 0; i < this.state.board.columns[colIndex].tickets.length; i++) {
-            let tkt = this.state.board.columns[colIndex].tickets[i];
+        for(let i = 0; i < this.props.board.columns[colIndex].tickets.length; i++) {
+            let tkt = this.props.board.columns[colIndex].tickets[i];
             if(tkt.id == tktID) {
                 return i;
             }
@@ -174,12 +258,12 @@ class Board extends Component {
      */
     findTktColID(tktID) {
         // loop through each column
-        for( let i = 0; i < this.state.board.columns.length; i++) {
+        for( let i = 0; i < this.props.board.columns.length; i++) {
             // check if ticket with provided ID is in that column
-            let tkts = this.state.board.columns[i].tickets
+            let tkts = this.props.board.columns[i].tickets
             for(let j = 0; j < tkts.length; j++) {
                 if(tkts[j].id == tktID) {
-                    return this.state.board.columns[i].id;
+                    return this.props.board.columns[i].id;
                 }
             }
         }
@@ -200,18 +284,14 @@ class Board extends Component {
         if(tktID) {
             let tktColID = this.findTktColID(tktID);
             if(tktColID == colID) return; // ticket already in col
-
-            let board = this.state.board;
+            let board = this.props.board;
 
             // remove ticket from current col
             let draggedTktColIndex = this.findIndexOfCol(this.findTktColID(tktID));
             let draggedTktIndex = this.findIndexOfTkt(draggedTktColIndex, tktID);
-
             let draggedColTkts = board.columns[draggedTktColIndex].tickets.slice(0, board.columns[draggedTktColIndex].tickets.length);
             let newDraggedColTkts = [];
-
             let ticket;
-
             for(let i = 0; i < draggedColTkts.length; i++) {
                 if (i != draggedTktIndex) {
                     newDraggedColTkts.push(board.columns[draggedTktColIndex].tickets[i]);
@@ -221,14 +301,23 @@ class Board extends Component {
                 }
             }
             board.columns[draggedTktColIndex].tickets = newDraggedColTkts;
-            
-            
+
             // add ticket to new col
             let hoveredColIndex = this.findIndexOfCol(colID);
             let newColTkts = board.columns[hoveredColIndex].tickets.slice(0, board.columns[hoveredColIndex].tickets.length);
             newColTkts.push(ticket);
 
             board.columns[hoveredColIndex].tickets = newColTkts;
+            // TODO: update db with the new columns
+            // this.props.setBoard(board);
+
+
+            // The tkt drag end event is not being captured properly, so this is here temporarily
+            // TODO: figure out why that event is not being captured properly, and then remove
+            // these from here.
+            this.props.setBoard(this.state.board);
+            this.updateBoardDB();
+
             this.setState({
                 board: board
             });
@@ -239,8 +328,8 @@ class Board extends Component {
         let draggedColID = this.state.draggedColumnID;
         if (draggedColID == colID) return; // return since ontop of itself
 
-        let board = this.state.board;
-        let boardCols = this.state.board.columns.slice(0, this.state.board.columns.length);
+        let board = this.props.board;
+        let boardCols = this.props.board.columns.slice(0, this.props.board.columns.length);
         let draggedColIndex = this.findIndexOfCol(draggedColID);
         let hoveredColIndex = this.findIndexOfCol(colID);
         if (draggedColIndex == null || hoveredColIndex == null) {
@@ -255,6 +344,8 @@ class Board extends Component {
             newBoardCols.push(...boardCols.slice(hoveredColIndex + 1, draggedColIndex))
             newBoardCols.push(...boardCols.slice(draggedColIndex+1, boardCols.length));
             board.columns = newBoardCols;
+            // TODO: update db with the new columns
+            // this.props.setBoard(board);
             this.setState({
                 board: board
             });
@@ -267,32 +358,33 @@ class Board extends Component {
             newBoardCols.push(boardCols[draggedColIndex]);
             newBoardCols.push(...boardCols.slice(hoveredColIndex+1, boardCols.length));
             board.columns = newBoardCols;
+            // TODO: update db with the new columns
+            // this.props.setBoard(board);
             this.setState({
-                board: board 
+                board: board
             });
         }
     }
 
     tktDragOver(e, tktID) {
-        e.stopPropagation();
-        e.preventDefault();
+        // e.stopPropagation();
+        // e.preventDefault();
 
         let draggedTktID = this.state.draggedTicketID;
         if (draggedTktID == tktID) return; // return since ontop of itself
 
         let tktColIndex = this.findIndexOfCol(this.findTktColID(tktID));
         let draggedTktColIndex = this.findIndexOfCol(this.findTktColID(draggedTktID));
-        let board = this.state.board;
+        let board = this.props.board;
         let draggedTktIndex = this.findIndexOfTkt(tktColIndex, draggedTktID);
 
         // tickets in diff cols
         if(tktColIndex != draggedTktColIndex) return;
 
         
-        let boardTkts = this.state.board.columns[tktColIndex].tickets.slice(0, this.state.board.columns[tktColIndex].tickets.length);
+        let boardTkts = this.props.board.columns[tktColIndex].tickets.slice(0, this.props.board.columns[tktColIndex].tickets.length);
         let hoveredTktIndex = this.findIndexOfTkt(tktColIndex, tktID);
         if (draggedTktIndex == null || hoveredTktIndex == null) {
-            // console.log("unable to retrieve the column object associated with the provided id");
             return;
         }
 
@@ -305,6 +397,7 @@ class Board extends Component {
             newColTkts.push(...boardTkts.slice(draggedTktIndex+1, boardTkts.length));
             board.columns[tktColIndex].tickets = newColTkts;
             // TODO: update db with the new columns
+            // this.props.setBoard(board);
             this.setState({
                 board: board
             });
@@ -318,10 +411,21 @@ class Board extends Component {
             newColTkts.push(...boardTkts.slice(hoveredTktIndex+1, boardTkts.length));
             board.columns[tktColIndex].tickets = newColTkts;
             // TODO: update db with the new columns
+            // this.props.setBoard(board);
             this.setState({
                 board: board
             });
         }
+    }
+
+    /**
+     * prevent event propogation when leaving a ticket during drag.
+     * @param {*} e 
+     * @param {*} tktID 
+     */
+    tktDragLeave(e, tktID) {
+        e.stopPropagation();
+        e.preventDefault();
     }
 
     /**
@@ -341,7 +445,10 @@ class Board extends Component {
      */
     colDragEnd(e, colIndex) {
         if(colIndex == e.dataTransfer.getData("draggedColID")) return;
+        this.props.setBoard(this.state.board);
         // TODO: update db with the new column order
+        this.updateBoardDB();
+
         this.setState({
             draggedTicketID: null,
             draggedColumnID: null
@@ -357,15 +464,14 @@ class Board extends Component {
         if(tktID == e.dataTransfer.getData("draggedTktID")) return;
         e.stopPropagation();
         e.preventDefault();
+        
+        this.props.setBoard(this.state.board);
+        this.updateBoardDB();
+
         this.setState({
             draggedTicketID: null,
             draggedColumnID: null
-        });
-    }
-
-    addColumn() {
-        console.log("add new column");
-        // TODO: add new column feature
+        });        
     }
 
     render() {
@@ -380,7 +486,7 @@ class Board extends Component {
                     <p>3</p>
                 </Dropdown> */}
                 <div className={"board_columns"}>
-                    {this.populateColumns(this.state.board.columns)}
+                    {this.populateColumns(this.state.board)}
                 </div>
             </div>
         )
@@ -389,12 +495,14 @@ class Board extends Component {
 
 // redux
 const mapStateToProps = (state, ownProps) => ({
-	repoList: state.repoList
+    repoList: state.repoList,
+    board: state.board
 });
 
 // dispach 
 const mapDispatchToProps = dispatch => ({
-    setRepoList: repoList => dispatch(setRepoList(repoList))
+    setRepoList: repoList => dispatch(setRepoList(repoList)),
+    setBoard: board => dispatch(setBoard(board))
 });
 
 export default connect(mapStateToProps, mapDispatchToProps)(Board);

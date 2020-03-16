@@ -12,7 +12,23 @@
     cursor: pointer;
 }
 
+.ticket-header-row {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    margin: 0 0 10px 0;
+}
+
 .ticket_title {
     color: $primary-text-highlight-light;
-    margin: 0 0 10px 0;
+
+    &:hover {
+        text-decoration: underline;
+    }
+}
+
+.delete-icon {
+    width: 15px;
+    height: 15px;
 }
