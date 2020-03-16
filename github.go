@@ -34,6 +34,7 @@ type Repository struct {
 	Owner string
 }
 
+// PullRequest ...
 type PullRequest struct {
 	Title string `json:"title"`
 	Body  string `json:"body"`
