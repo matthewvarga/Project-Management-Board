@@ -136,11 +136,15 @@ class NewTicketForm extends Component {
                 owner: owner
             })
         }).then((response) => {
+
+            console.log(response);
             // error
             if (!response.ok) return;
 
             // if response is okay, read data
             response.json().then(data => {
+
+                console.log(data);
                 let repoBranches = ["None", "Create New Branch"];
                 for (let i = 0; i < data.length; i++) {
                     repoBranches.push(data[i].name);
