@@ -4,6 +4,9 @@ import Ticket from "./ticket";
 import Modal from "../../modal/index";
 import NewTicketForm from "../new-ticket-form/index";
 import './styles';
+import IconDelete from '../../../icons/delete';
+import { connect } from 'react-redux';
+import {setBoard} from "../../actions/index";
 
 class Column extends Component {
 
@@ -11,19 +14,21 @@ class Column extends Component {
         super(props);
 
         this.modalRef = React.createRef();
-
+        
+        
         this.state = {
-            tickets: props.tickets || []
+            col: props.colObj || {}
         }
     }
 
     componentDidUpdate(prevProps, prevState) {
         // deep prop changes dont propogate to force statechange,
         // so have to manually check and update
-        if(prevProps.tickets != this.props.tickets) {
+        if(JSON.stringify(prevProps.colObj) != JSON.stringify(this.props.colObj)) {
+            console.log("col update");
             this.setState({
-                tickets: this.props.tickets
-            })
+                col: this.props.colObj
+            });
         }
     }
 
@@ -37,9 +42,9 @@ class Column extends Component {
         for(let i = 0; i < len; i++) {
             let tkt = tickets[i];
             tkts.push (
-                <Ticket title={tkt.title}
-                    creator={tkt.creator}
-                    number={tkt.number}
+                <Ticket 
+                    tktObj={tkt}
+                    colID={this.state.col.id}
                     draggable={"true"} 
                     onDragStart={(e) => {this.props.onTktDragStart(e, tkt.id)}}
                     onDragOver={(e) => {this.props.onTktDragOver(e, tkt.id)}}
@@ -52,11 +57,36 @@ class Column extends Component {
         return tkts;
     }
 
-    addTicket(e) {
-        console.log("add ticket");
+    deleteCol(e) {
+        fetch("http://localhost:3000/api/boards/" + this.props.board.id + "/columns/" + this.state.col.id + "/", {
+            method: 'DELETE',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+            }
+        }).then((response) => {
+
+            console.log("response");
+            console.log(response);
+
+            // error
+            if (!response.ok) return;
+
+            // if response is okay, read data
+            response.json().then(data => {
+
+                console.log("data");
+                console.log(data);
+
+
+                // update store
+                this.props.setBoard(data);
+            });   
+        });
     }
 
     render() {
+        console.log("col render");
         return (
             <div className={"column " + (this.props.className ? this.props.className : "") }
                 draggable={this.props.draggable}
@@ -66,23 +96,35 @@ class Column extends Component {
             >
                 <div className={"column_header"}>
                     <div className={"column_header_container"}>
-                        <span className={"column_num_tickets"}>{this.state.tickets ? this.state.tickets.length: "?"}</span>
-                        <h3 className={"column_title"}>{this.props.title || "Board Title"}</h3>
+                        <span className={"column_num_tickets"}>{this.state.col.tickets ? this.state.col.tickets.length: "?"}</span>
+                        <h3 className={"column_title"}>{this.state.col.title || "Board Title"}</h3>
                     </div>
                     <div className={"column_header_container"}>
                         {/* <IconPlus className={"column_plus_icon"} onClick={(e) => this.addTicket(e)}/> */}
                         <Modal ref={this.modalRef} button={<IconPlus className={"modal_plus_icon"} onClick={() => {}}/>}
                             title={"create new ticket"}>
-                            <NewTicketForm colID={this.props.colID} onSubmitTicket={() => this.closeCreateTicketModal()}/>
+                            <NewTicketForm colID={this.state.col.id} onSubmitTicket={() => this.closeCreateTicketModal()}/>
                         </Modal>
+                        <IconDelete className={"delete-col"} onClick={() => this.deleteCol()}/>
                     </div>
                 </div>
                 <div className={"column_tickets"}>
-                    {this.populateTickets(this.state.tickets)}
+                    {this.populateTickets(this.state.col.tickets)}
                 </div>
             </div>
         )
     }
 }
 
-export default Column;
+
+// redux
+const mapStateToProps = (state, ownProps) => ({
+    board: state.board
+});
+
+// dispach 
+const mapDispatchToProps = dispatch => ({
+    setBoard: board => dispatch(setBoard(board))
+});
+
+export default connect(mapStateToProps, mapDispatchToProps)(Column);

@@ -31,12 +31,12 @@
 
 .column_title {
     padding: 0 10px;
+    font-size: 16px;
 }
 
-.modal_plus_icon {
-    width: 23px;
-    height: 23px;
-    background-size: cover;
+.modal_plus_icon, .delete-col {
+    width: 18px;
+    height: 18px;
     cursor: pointer;
 
     &:hover {

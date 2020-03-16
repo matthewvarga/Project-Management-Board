@@ -20,11 +20,44 @@ class Board extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        if (prevProps.board != this.props.board) {
+        console.log("update");
+        if (JSON.stringify(prevProps.board) != JSON.stringify(this.props.board)) {
             this.setState({
                 board: this.props.board
             });
         }
+    }
+
+    addColumn() {
+        // TODO: add new column feature
+        fetch("http://localhost:3000/api/boards/" + this.props.board.id + "/columns/", {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                title: "test"
+            })
+        }).then((response) => {
+
+            console.log("response");
+            console.log(response);
+            // error
+            if (!response.ok) return;
+
+            // if response is okay, read data
+            response.json().then(data => {
+                // update store
+                console.log("data");
+                console.log(data)
+
+                this.props.setBoard(data);
+                this.setState({
+                    board: data
+                });
+            });   
+        });
     }
 
     updateBoardDB() {
@@ -107,10 +140,10 @@ class Board extends Component {
         for(let i = 0; i < len; i++) {
             let colID = board.columns[i].id;
             cols.push (
-                <Column className={"board_column"} 
-                    title={board.columns[i].title}
-                    tickets={board.columns[i].tickets || []}
-                    colID={board.columns[i].id}
+                <Column 
+                    className={"board_column"}
+                    colObj={board.columns[i]}
+                    boardID={board.id}
                     draggable={"true"} 
                     onDragStart={(e) => {this.colDragStart(e, colID)}}
                     onDragOver={(e) => {this.colDragOver(e, colID)}}
@@ -393,10 +426,6 @@ class Board extends Component {
             draggedTicketID: null,
             draggedColumnID: null
         });        
-    }
-
-    addColumn() {
-        // TODO: add new column feature
     }
 
     render() {
