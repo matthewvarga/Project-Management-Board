@@ -66,7 +66,7 @@ class NewTicketForm extends Component {
         // TODO: more input verification
         if (!title) return;
 
-        fetch("http://project-management.tools/api/boards/" + this.props.board.id +"/columns/" + this.props.colID +"/tickets/", {
+        fetch("https://project-management.tools/api/boards/" + this.props.board.id +"/columns/" + this.props.colID +"/tickets/", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -125,7 +125,7 @@ class NewTicketForm extends Component {
      * @param {*} owner - owner name
      */
     retrieveBranches(repo, owner) {
-        fetch("http://project-management.tools/api/repos/branches", {
+        fetch("https://project-management.tools/api/repos/branches", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -166,7 +166,7 @@ class NewTicketForm extends Component {
      * @param {*} owner - owner name
      */
     retrieveContributers(repo, owner) {
-        fetch("http://project-management.tools/api/repos/users", {
+        fetch("https://project-management.tools/api/repos/users", {
             method: 'POST',
             mode: 'cors',
             headers: {

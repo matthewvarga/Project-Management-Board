@@ -74,7 +74,7 @@ func main() {
 
 	// configure basic cors middleware
 	headersOk := handlers.AllowedHeaders([]string{"Accept, Content-Type, Content-Length, Accept-Encoding, Authorization"})
-	originsOk := handlers.AllowedOrigins([]string{"http://localhost:8080"})
+	originsOk := handlers.AllowedOrigins([]string{"https://localhost:8080"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	// serve the webpage

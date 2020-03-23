@@ -66,7 +66,7 @@ class Board extends Component {
 
     addColumn() {
         // TODO: add new column feature
-        fetch("http://project-management.tools/api/boards/" + this.props.board.id + "/columns/", {
+        fetch("https://project-management.tools/api/boards/" + this.props.board.id + "/columns/", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -97,7 +97,7 @@ class Board extends Component {
     }
 
     updateBoardDB() {
-        fetch("http://project-management.tools/api/boards/5e6aca0522a1867fe4086dbd/", {
+        fetch("https://project-management.tools/api/boards/5e6aca0522a1867fe4086dbd/", {
             method: 'PATCH',
             mode: 'cors',
             headers: {
@@ -112,7 +112,7 @@ class Board extends Component {
     }
 
     retrieveBoard() {
-        fetch("http://project-management.tools/api/boards/5e6aca0522a1867fe4086dbd/", {
+        fetch("https://project-management.tools/api/boards/5e6aca0522a1867fe4086dbd/", {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -137,7 +137,7 @@ class Board extends Component {
      * retrieve a list of signed in users github repos
      */
     retrieveRepos() {
-        fetch("http://project-management.tools/api/repos", {
+        fetch("https://project-management.tools/api/repos", {
             method: 'GET',
             mode: 'cors',
             headers: {

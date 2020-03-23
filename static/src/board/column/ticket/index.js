@@ -36,7 +36,7 @@ class Ticket extends Component {
         console.log("colID: " + colID);
         console.log("tktID: " + tktID);
 
-        fetch("http://project-management.tools/api/boards/" + boardID + "/columns/" + colID + "/tickets/" + tktID, {
+        fetch("https://project-management.tools/api/boards/" + boardID + "/columns/" + colID + "/tickets/" + tktID, {
             method: 'DELETE',
             mode: 'cors',
             headers: {

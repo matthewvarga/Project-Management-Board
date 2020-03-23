@@ -24,7 +24,7 @@ ReactDOM.render(
             <Switch>
                 <Route path={"/"}>
                     <Board></Board>
-                    <a href="https://github.com/login/oauth/authorize?scope=repo&client_id=e01c4cb7708610450afc&redirect_uri=http://project-management.tools/oauth/redirect">Login with github</a>
+                    <a href="https://github.com/login/oauth/authorize?scope=repo&client_id=e01c4cb7708610450afc&redirect_uri=https://project-management.tools/oauth/redirect">Login with github</a>
                 </Route>
             </Switch>
         </Router>

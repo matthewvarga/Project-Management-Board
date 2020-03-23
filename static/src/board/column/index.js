@@ -58,7 +58,7 @@ class Column extends Component {
     }
 
     deleteCol(e) {
-        fetch("http://project-management.tools/api/boards/" + this.props.board.id + "/columns/" + this.state.col.id + "/", {
+        fetch("https://project-management.tools/api/boards/" + this.props.board.id + "/columns/" + this.state.col.id + "/", {
             method: 'DELETE',
             mode: 'cors',
             headers: {
