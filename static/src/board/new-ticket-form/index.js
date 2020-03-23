@@ -199,7 +199,7 @@ class NewTicketForm extends Component {
     }
 
     selectAsignee(e, i) {
-        console.log("select assignee");
+        // console.log("select assignee");
     }
 
     nextPage(e) {

@@ -20,7 +20,7 @@ class Board extends Component {
     }
 
     componentDidUpdate(prevProps, prevState) {
-        console.log("update");
+        
         if (JSON.stringify(prevProps.board) != JSON.stringify(this.props.board)) {
             this.setState({
                 board: this.props.board
@@ -30,7 +30,7 @@ class Board extends Component {
 
     addColumn() {
         // TODO: add new column feature
-        fetch("http://localhost:3000/api/boards/" + this.props.board.id + "/columns/", {
+        fetch("http://localhost:3000/api/boards/" + this.state.board.id + "/columns/", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -40,17 +40,12 @@ class Board extends Component {
                 title: "test"
             })
         }).then((response) => {
-
-            console.log("response");
-            console.log(response);
             // error
             if (!response.ok) return;
 
             // if response is okay, read data
             response.json().then(data => {
                 // update store
-                console.log("data");
-                console.log(data)
 
                 this.props.setBoard(data);
                 this.setState({
@@ -191,8 +186,8 @@ class Board extends Component {
      * @param {*} colID - the id of the column we are trying to find
      */
     findIndexOfCol(colID) {
-        for(let i = 0; i < this.props.board.columns.length; i++) {
-            let col = this.props.board.columns[i];
+        for(let i = 0; i < this.state.board.columns.length; i++) {
+            let col = this.state.board.columns[i];
             if(col.id == colID) {
                 return i;
             }
@@ -207,8 +202,8 @@ class Board extends Component {
      * @param {*} tktID - the id of the ticket
      */
     findIndexOfTkt(colIndex, tktID) {
-        for(let i = 0; i < this.props.board.columns[colIndex].tickets.length; i++) {
-            let tkt = this.props.board.columns[colIndex].tickets[i];
+        for(let i = 0; i < this.state.board.columns[colIndex].tickets.length; i++) {
+            let tkt = this.state.board.columns[colIndex].tickets[i];
             if(tkt.id == tktID) {
                 return i;
             }
@@ -222,12 +217,12 @@ class Board extends Component {
      */
     findTktColID(tktID) {
         // loop through each column
-        for( let i = 0; i < this.props.board.columns.length; i++) {
+        for( let i = 0; i < this.state.board.columns.length; i++) {
             // check if ticket with provided ID is in that column
-            let tkts = this.props.board.columns[i].tickets
+            let tkts = this.state.board.columns[i].tickets
             for(let j = 0; j < tkts.length; j++) {
                 if(tkts[j].id == tktID) {
-                    return this.props.board.columns[i].id;
+                    return this.state.board.columns[i].id;
                 }
             }
         }
@@ -248,7 +243,7 @@ class Board extends Component {
         if(tktID) {
             let tktColID = this.findTktColID(tktID);
             if(tktColID == colID) return; // ticket already in col
-            let board = this.props.board;
+            let board = this.state.board;
 
             // remove ticket from current col
             let draggedTktColIndex = this.findIndexOfCol(this.findTktColID(tktID));
@@ -292,8 +287,8 @@ class Board extends Component {
         let draggedColID = this.state.draggedColumnID;
         if (draggedColID == colID) return; // return since ontop of itself
 
-        let board = this.props.board;
-        let boardCols = this.props.board.columns.slice(0, this.props.board.columns.length);
+        let board = this.state.board;
+        let boardCols = this.state.board.columns.slice(0, this.state.board.columns.length);
         let draggedColIndex = this.findIndexOfCol(draggedColID);
         let hoveredColIndex = this.findIndexOfCol(colID);
         if (draggedColIndex == null || hoveredColIndex == null) {
@@ -339,14 +334,14 @@ class Board extends Component {
 
         let tktColIndex = this.findIndexOfCol(this.findTktColID(tktID));
         let draggedTktColIndex = this.findIndexOfCol(this.findTktColID(draggedTktID));
-        let board = this.props.board;
+        let board = this.state.board;
         let draggedTktIndex = this.findIndexOfTkt(tktColIndex, draggedTktID);
 
         // tickets in diff cols
         if(tktColIndex != draggedTktColIndex) return;
 
         
-        let boardTkts = this.props.board.columns[tktColIndex].tickets.slice(0, this.props.board.columns[tktColIndex].tickets.length);
+        let boardTkts = this.state.board.columns[tktColIndex].tickets.slice(0, this.state.board.columns[tktColIndex].tickets.length);
         let hoveredTktIndex = this.findIndexOfTkt(tktColIndex, tktID);
         if (draggedTktIndex == null || hoveredTktIndex == null) {
             return;
