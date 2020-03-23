@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // spaHandler implements the http.Handler interface, so we can use it
@@ -50,6 +52,7 @@ func main() {
 	// handle api routes
 	handleRoutes(router)
 
+	// handle static files
 	spa := spaHandler{staticPath: "./static/dist", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
@@ -57,6 +60,12 @@ func main() {
 	db, err := loadMongoClient()
 	if err != nil {
 		log.Fatal(err)
+	}
+
+	// ssl cert manager
+	certManager := autocert.Manager{
+		Prompt: autocert.AcceptTOS,
+		Cache:  autocert.DirCache("certs"),
 	}
 
 	// call the example function that performs an insert and select query to
@@ -70,12 +79,16 @@ func main() {
 
 	// serve the webpage
 	srv := &http.Server{
+		Addr:    "project-management.tools:443",
 		Handler: handlers.CORS(originsOk, headersOk, methodsOk)(router),
-		Addr:    "project-management.tools:3000",
+		TLSConfig: &tls.Config{
+			GetCertificate: certManager.GetCertificate,
+		},
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Fatal(srv.ListenAndServe())
+	go http.ListenAndServe("project-management.tools:3000", certManager.HTTPHandler(nil))
+	log.Fatal(srv.ListenAndServeTLS("", ""))
 }
