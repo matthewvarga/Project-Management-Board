@@ -24,8 +24,7 @@ class Column extends Component {
     componentDidUpdate(prevProps, prevState) {
         // deep prop changes dont propogate to force statechange,
         // so have to manually check and update
-        if(JSON.stringify(prevProps.colObj) != JSON.stringify(this.props.colObj)) {
-            console.log("col update");
+        if(JSON.stringify(this.state.col) != JSON.stringify(this.props.colObj)) {
             this.setState({
                 col: this.props.colObj
             });
@@ -66,17 +65,11 @@ class Column extends Component {
             }
         }).then((response) => {
 
-            console.log("response");
-            console.log(response);
-
             // error
             if (!response.ok) return;
 
             // if response is okay, read data
             response.json().then(data => {
-
-                console.log("data");
-                console.log(data);
 
 
                 // update store
@@ -86,7 +79,6 @@ class Column extends Component {
     }
 
     render() {
-        console.log("col render");
         return (
             <div className={"column " + (this.props.className ? this.props.className : "") }
                 draggable={this.props.draggable}

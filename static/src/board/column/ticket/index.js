@@ -27,14 +27,9 @@ class Ticket extends Component {
     }
 
     deleteTicket() {
-        console.log("delete");
         let boardID = this.props.board.id;
         let colID = this.props.colID;
         let tktID = this.state.tkt.id;
-        
-        console.log("boardID: " + boardID);
-        console.log("colID: " + colID);
-        console.log("tktID: " + tktID);
 
         fetch("https://project-management.tools/api/boards/" + boardID + "/columns/" + colID + "/tickets/" + tktID, {
             method: 'DELETE',
@@ -44,20 +39,11 @@ class Ticket extends Component {
                 'Content-Type': 'application/json',
             }
         }).then((response) => {
-
-            console.log("response");
-            console.log(response);
-
             // error
             if (!response.ok) return;
 
             // if response is okay, read data
             response.json().then(data => {
-
-                console.log("data");
-                console.log(data);
-
-
                 // update store
                 this.props.setBoard(data);
             });   

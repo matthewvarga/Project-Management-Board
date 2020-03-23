@@ -1,4 +1,4 @@
-# Team Zero
+# Team Zero 
 
 Our application, *zero*, aims to be a project management tool that is well integrated with GitHub, allowing for easy collaboration amongst developers. It is a visual aid for tracking who is working on what, along with providing essential git features such as creating / merging branches, and submitting pull requests. It can seen as a combination of numerous similar tools such as Jira, GitHub Projects, and Gitlab Boards, but with handpicked features from all combined into a single simple and easy to use application.
 
@@ -123,6 +123,8 @@ To begin developing the application locally, follow the instructions listed belo
 ## Deployment
 
 TODO: add instructions on how to deploy to production environment.
+
+production ip: 138.197.169.114
 
 ## Acknowledgments
 
