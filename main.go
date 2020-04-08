@@ -53,16 +53,6 @@ func main() {
 	spa := spaHandler{staticPath: "./static/dist", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
-	// connect to db
-	db, err := loadMongoClient()
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// call the example function that performs an insert and select query to
-	// the db and prints the results to log.
-	dbInsertSelectExample(db)
-
 	// configure basic cors middleware
 	headersOk := handlers.AllowedHeaders([]string{"Accept, Content-Type, Content-Length, Accept-Encoding, Authorization"})
 	originsOk := handlers.AllowedOrigins([]string{"http://localhost:8080"})
@@ -77,5 +67,6 @@ func main() {
 		ReadTimeout:  15 * time.Second,
 	}
 
+	log.Println("listening on port: 3000")
 	log.Fatal(srv.ListenAndServe())
 }

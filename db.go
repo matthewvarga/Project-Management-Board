@@ -74,50 +74,6 @@ func retrieveMongoCollection(client *mongo.Client, db string, collection string)
 	return c
 }
 
-// this is a very basic example of how to query the mongo db. It first inserts a record
-// into the db: team_zero, collection: temp
-// then it prints the corresponding document id associated with the record inserted.
-// finally, it selects the inserted record and reads the data into a struct,
-// printing the results to the log.
-func dbInsertSelectExample(db *mongo.Client) {
-	// EXAMPLE OF USING THE DB CONNECTION
-	// ASSUME WE HAVE A MONGO DB NAMED team_zero WITH COLLECTION temp
-	// WE WILL INSERT THE DOCUMENT {"test": "hello world"}, THEN
-	// RETRIEVE IT AGAIN.
-	tempCollection := retrieveMongoCollection(db, "team_zero", "temp")
-
-	// INSERT EXAMPLE
-	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	res, err := tempCollection.InsertOne(ctx, bson.M{"name": "bob", "age": 20, "isNice": true})
-	if err != nil {
-		log.Fatal(err)
-	}
-	// retrieve id of inserted document
-	id := res.InsertedID
-	log.Printf("Inserted document id: %s\n", id)
-
-	// SELECT EXAMPLE
-
-	// we first need to declare the struct that will store the result (usually this is done outside of the func,
-	// but its just here for an example).
-	var result struct {
-		Name   string
-		Age    int
-		IsNice bool
-	}
-	// what we will be searching for (a document with the name field set as bob)
-	filter := bson.M{"name": "bob"}
-	ctx, cancel = context.WithTimeout(context.Background(), 5*time.Second)
-	defer cancel()
-	err = tempCollection.FindOne(ctx, filter).Decode(&result)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Printf("The selected record is: %+v\n", result)
-}
-
 // Source: https://www.alexedwards.net/blog/how-to-properly-parse-a-json-request-body
 func (mr *malformedRequest) Error() string {
 	return mr.msg
