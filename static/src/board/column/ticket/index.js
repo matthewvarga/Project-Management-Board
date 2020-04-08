@@ -1,5 +1,6 @@
 import React, {Component} from 'react';
 import IconDelete from "../../../../icons/delete";
+import {Link} from "react-router-dom";
 import { connect } from 'react-redux';
 import {setBoard} from "../../../actions/index";
 import './styles';
@@ -61,7 +62,7 @@ class Ticket extends Component {
             >
 
                 <div className={"ticket-header-row"}>
-                    <h4 className={"ticket_title"}>{this.state.tkt.title || "Ticket title"}</h4>
+                    <Link to={"/tickets/" + this.state.tkt.id} className={"ticket_title"}>{this.state.tkt.title || "Ticket title"}</Link>
                     <IconDelete className={"delete-icon"} onClick={() => this.deleteTicket()}/>
                 </div>
                 

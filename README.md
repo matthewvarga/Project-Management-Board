@@ -126,6 +126,8 @@ TODO: add instructions on how to deploy to production environment.
 
 production ip: 138.197.169.114
 
+domain: project-management.tools
+
 ## Acknowledgments
 
 The frontend setup steps were followed from [here](https://www.valentinog.com/blog/babel/?fbclid=IwAR3GD55NNS9rAWAEn3QS1TSmrLmIVr7EARtUgmRHD5AUlW9ETj7A7flAluQ).

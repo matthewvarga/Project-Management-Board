@@ -1,0 +1,30 @@
+@import "../styles/variables";
+
+$github-grey: #464646;
+
+.login_page {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+    align-items: center;
+}
+
+.github_btn {
+    color: $primary-background-light;
+    background: $github-grey;
+    padding: 5px 25px;
+    border-radius: 8px;
+    box-shadow: $material-box-shadow-light-1;
+    cursor: pointer;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    text-decoration: none;
+}
+
+.github_icon {
+    fill: $primary-background-light;
+    width: 25px;
+    height: 25px;
+}
