@@ -12,7 +12,7 @@ class Board extends Component {
         this.state = {
             draggedTicketID: null,
             draggedColumnID: null,
-            board:null
+            board: this.props.board
         };
 
         if (!this.props.board) this.retrieveBoard();

@@ -1,0 +1,52 @@
+@import "../styles/variables";
+
+.ticket_page {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 64px;
+}
+
+.ticket_content {
+    width: 800px;
+
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket_page_header_row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 16px 0;
+}
+
+.ticket_page_header {
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket_page_header_desc {
+    font-size: 14px;
+    color: $primary-text-lighter-light;
+}
+
+.ticket_page_content_row {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.ticket_page_content_row_title {
+    color: $secondary-text-highlight-light;
+    padding: 0 8px 0 0;
+}
+
+.ticket_page_content_row_line {
+    display: flex;
+    flex-grow: 1;
+    border-bottom: 1px solid $primary-border-light;
+}
