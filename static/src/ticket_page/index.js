@@ -5,6 +5,7 @@ import {setBoard} from '../actions/index';
 import ExpandableRow from './expandable_row/index';
 import TicketDetails from './ticket_details/index';
 import TicketDescription from './ticket_description/index';
+import TicketComments from './ticket_comments/index';
 import NavBar from '../navbar/index';
 import './styles';
 
@@ -54,10 +55,12 @@ class TicketPage extends Component {
                             dateCreated={this.state.ticket.created_date}
                             author={this.state.ticket.author}/>
                     </ExpandableRow>
-                    <ExpandableRow title={"Description"}>
+                    <ExpandableRow title={"Description"} isOpen={true}>
                         <TicketDescription />
                     </ExpandableRow>
-                    <ExpandableRow title={"Comments"} />
+                    <ExpandableRow title={"Comments"} isOpen={true}>
+                        <TicketComments />
+                    </ExpandableRow>
                 </div>
             </div>
         )

@@ -63,7 +63,15 @@ module.exports = {
                     loader: 'file-loader',
                   },
                 ],
-              }
+            },
+            // react-rte
+            {
+                test: /\.css$/,
+                loaders: [
+                  'style-loader',
+                  'css-loader?modules'
+                ]
+            }
         ]
     },
     plugins: [

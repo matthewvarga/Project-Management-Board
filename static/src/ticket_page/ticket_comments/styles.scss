@@ -1,0 +1,35 @@
+@import "../../styles/variables";
+
+.ticket_comments {
+    display: flex;
+    flex-direction: column;
+}
+
+.ticket_comments_rte_row {
+    display: flex;
+    flex-direction: row;
+}
+
+.ticket_comments_user_image {
+    border: 1px solid $primary-border-light;
+    width: 50px;
+    height: 50px;
+    margin: 0 10px 0 0;
+}
+
+.ticket_comments_rte {
+    width: 100%;
+}
+
+.ticket_comments_btn_row {
+    margin: 10px 0 0 0;
+}
+
+.ticket_comments_btn {
+    margin: 0 0 0 60px;
+    color: $primary-text-lighter-light;
+    border: 1px solid $primary-text-lighter-light;
+    border-radius: 5px;
+    padding: 5px 8px;
+    cursor: pointer;
+}
