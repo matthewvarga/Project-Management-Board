@@ -1,0 +1,40 @@
+@import "../../styles/variables";
+
+.expandable_row {
+    display: flex;
+    flex-direction: column;
+}
+
+.expandable_row_header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 8px 0;
+}
+
+.expandable_row_title {
+    color: $secondary-text-highlight-light;
+    padding: 0 8px 0 0;
+
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    cursor: pointer;
+}
+
+.expandable_row_icon {
+    width: 15px;
+    height: 15px;
+    margin: 0 10px 0 0;
+    fill: $primary-text-lighter-light;
+}
+
+.expandable_row_line {
+    display: flex;
+    flex-grow: 1;
+    border-bottom: 1px solid $primary-border-light;
+}
+
+.expandable_row_content {
+    margin: 12px 24px 12px 40px;
+}

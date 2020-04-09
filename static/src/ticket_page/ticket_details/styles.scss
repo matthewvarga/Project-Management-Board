@@ -1,0 +1,26 @@
+@import "../../styles/variables";
+
+.ticket_details {
+    display: flex;
+    flex-direction: row;
+}
+
+.ticket_details_col {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+}
+
+.ticket_details_row {
+    display: flex;
+    flex-direction: row;
+    padding: 5px 0;
+}
+
+.ticket_details_title {
+    font-size: 16px;
+}
+
+.ticket_details_value {
+    padding: 0 0 0 8px;
+}

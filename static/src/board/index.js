@@ -2,6 +2,7 @@ import React, {Component} from 'react';
 import { connect } from 'react-redux';
 import {setRepoList, setBoard} from "../actions/index";
 import Column from "./column/index";
+import NavBar from '../navbar/index';
 import './styles';
 
 class Board extends Component {
@@ -426,11 +427,14 @@ class Board extends Component {
     render() {
         return (
             <div className={"board"}>
-                <div className={"board_header"}>
-                    <h1 className={"board_title"}>{this.props.title || "Board Title"}</h1>
-                </div>
-                <div className={"board_columns"}>
-                    {this.populateColumns(this.state.board)}
+                <NavBar className={"board_navbar"}/>
+                <div className={"board_content"}>
+                    <div className={"board_header"}>
+                        <h1 className={"board_title"}>{this.props.title || "Board Title"}</h1>
+                    </div>
+                    <div className={"board_columns"}>
+                        {this.populateColumns(this.state.board)}
+                    </div>
                 </div>
             </div>
         )

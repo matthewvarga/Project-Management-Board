@@ -1,0 +1,40 @@
+@import "../styles/variables";
+
+.navbar {
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    width: 100%;
+    padding: 10px 0;
+    box-shadow: 0px 6px 10px -7px #a8a8a8;
+}
+
+.navbar_content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 65%;
+    min-width: 400px;
+    max-width: 900px;
+}
+
+.navbar_link, .navbar_link_active {
+    text-decoration: none;
+}
+
+.navbar_link, .navbar_divider {
+    color: $primary-text-light;
+}
+
+.navbar_link_active {
+    color: $primary-text-lighter-light;
+}
+
+.navbar_logout {
+    color: $primary-text-lighter-light;
+    border: 1px solid $primary-text-lighter-light;
+    padding: 5px 8px;
+    border-radius: 8px;
+    cursor: pointer;
+}

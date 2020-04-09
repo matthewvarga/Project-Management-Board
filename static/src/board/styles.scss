@@ -1,9 +1,39 @@
 @import "../styles/variables";
 
+$board-max-width: 60%;
+
 .board {
     display: flex;
     flex-direction: column;
-    padding: 10px;
+    justify-content: flex-start;
+    align-items: center;
+    flex-grow: 1;
+}
+
+.board_navbar {
+    .navbar_content {
+        width: $board-max-width;
+        max-width: $board-max-width;
+    }
+
+    .navbar_divider {
+        display: none;
+    }
+
+    .navbar_link_active {
+        display: none;
+    }
+}
+
+.board_content {
+    max-width: $board-max-width;
+    overflow-x: scroll;
+
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+
+    max-height: 90%;
 }
 
 .board_header {
@@ -13,16 +43,15 @@
 .board_columns {
     display: flex;
     flex-direction: row;
+    flex-grow: 1;
 }
 
 .board_column, .add_board_column {
     width: 250px;
+    min-width: 250px;
     margin: 5px;
 }
 
-.board_column {
-    min-height: 80vh;
-}
 
 .add_board_column {
     display: flex;
@@ -33,4 +62,7 @@
     border-radius: 5px;
     cursor: pointer;
     color: $primary-text-light;
+
+    width: 225px;
+    min-width: 200px;
 }
