@@ -76,7 +76,6 @@ repo: name field of repository
 owner: owner field of repository
 **/
 func getRepositoryCollaborators(w http.ResponseWriter, r *http.Request, token string) {
-	token = "80b70f7e502e33c11f97d554a2d775c2da8e5f4b"
 	requestVars := mux.Vars(r)
 
 	client := http.Client{}
@@ -105,7 +104,6 @@ repo: name field of repository
 owner: owner field of repository
 **/
 func getBranches(w http.ResponseWriter, r *http.Request, token string) {
-	token = "80b70f7e502e33c11f97d554a2d775c2da8e5f4b"
 	requestVars := mux.Vars(r)
 
 	client := http.Client{}
