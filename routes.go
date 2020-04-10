@@ -56,9 +56,9 @@ func handleRoutes(router *mux.Router) {
 	}).Methods("POST")
 
 	// POST to retrieve branches for given repo
-	router.HandleFunc("/api/repos/branches", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/{owner}/repos/{repo}/branches", func(w http.ResponseWriter, r *http.Request) {
 		getBranches(w, r, getToken(r))
-	}).Methods("POST")
+	}).Methods("GET")
 
 	//GET
 	router.HandleFunc("/api/repos", func(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +66,7 @@ func handleRoutes(router *mux.Router) {
 	}).Methods("GET")
 
 	//POST to get a list of collaborators
-	router.HandleFunc("/api/repos/users", func(w http.ResponseWriter, r *http.Request) {
+	router.HandleFunc("/api/{owner}/repos/{repo}/users", func(w http.ResponseWriter, r *http.Request) {
 		getRepositoryCollaborators(w, r, getToken(r))
-	}).Methods("POST")
+	}).Methods("GET")
 }

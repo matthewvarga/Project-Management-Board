@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+	"github.com/gorilla/mux"
 )
 
 // CreateBranchRequest ...
@@ -75,16 +76,10 @@ repo: name field of repository
 owner: owner field of repository
 **/
 func getRepositoryCollaborators(w http.ResponseWriter, r *http.Request, token string) {
-	var repository Repository
-
-	err := json.NewDecoder(r.Body).Decode(&repository)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
+	requestVars := mux.Vars(r)
 
 	client := http.Client{}
-	request, _ := http.NewRequest("GET", "https://api.github.com/repos/"+repository.Owner+"/"+repository.Repo+"/collaborators", nil)
+	request, _ := http.NewRequest("GET", "https://api.github.com/repos/"+requestVars["owner"]+"/"+requestVars["repo"]+"/collaborators", nil)
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", "token "+token)
@@ -104,21 +99,15 @@ func getRepositoryCollaborators(w http.ResponseWriter, r *http.Request, token st
 }
 
 /**
-Gets a list of branches for a specific repository, and the following need to be in the POST request
+Gets a list of branches for a specific repository, and the following need to be in the GET request URL
 repo: name field of repository
 owner: owner field of repository
 **/
 func getBranches(w http.ResponseWriter, r *http.Request, token string) {
-	var repository Repository
-
-	err := json.NewDecoder(r.Body).Decode(&repository)
-
-	if err != nil {
-		http.Error(w, err.Error(), http.StatusBadRequest)
-	}
+	requestVars := mux.Vars(r)
 
 	client := http.Client{}
-	request, _ := http.NewRequest("GET", "https://api.github.com/repos/"+repository.Owner+"/"+repository.Repo+"/branches", nil)
+	request, _ := http.NewRequest("GET", "https://api.github.com/repos/"+requestVars["owner"]+"/"+requestVars["repo"]+"/branches", nil)
 
 	request.Header.Set("Content-Type", "application/json")
 	request.Header.Set("Authorization", "token "+token)
