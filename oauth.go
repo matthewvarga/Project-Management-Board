@@ -96,6 +96,9 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	}
 
 	http.SetCookie(w, userCookie)
+	if t.AccessToken != "" {
+		amw.tokenUsers[t.AccessToken] = profile.Login
+	}
 
 	// redirect to home page
 	w.Header().Set("Location", "/")

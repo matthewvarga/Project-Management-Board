@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
 	"github.com/gorilla/mux"
@@ -19,6 +20,30 @@ func getToken(r *http.Request) string {
 	return ""
 }
 
+// user session struct
+type authenticationMiddleware struct {
+	tokenUsers map[string]string
+}
+
+var amw authenticationMiddleware = authenticationMiddleware{tokenUsers: make(map[string]string)}
+
+// Middleware function, which will be called for each request
+func (amw *authenticationMiddleware) Middleware(next http.Handler) http.Handler {
+	return http.HandlerFunc(func(w http.ResponseWriter, r *http.Request) {
+		token := getToken(r)
+
+		if user, found := amw.tokenUsers[token]; found {
+			// We found the token in our map
+			log.Printf("Authenticated user %s\n", user)
+			// Pass down the request to the next middleware (or final handler)
+			next.ServeHTTP(w, r)
+		} else {
+			// Write an error and stop the handler chain
+			http.Error(w, "Forbidden", http.StatusForbidden)
+		}
+	})
+}
+
 func handleRoutes(router *mux.Router) {
 
 	// EXAMPLE OF API SUPER BASIC API HANDLER
@@ -31,16 +56,18 @@ func handleRoutes(router *mux.Router) {
 		json.NewEncoder(w).Encode(map[string]bool{"ok": true})
 	})
 
+	subrouter := router.PathPrefix("/api").Subrouter()
+	subrouter.Use(amw.Middleware)
 	// ADD OTHER ROUTES HERE
-	router.HandleFunc("/api/boards/", createBoard).Methods("POST")
-	router.HandleFunc("/api/boards/{boardID}/columns/", createColumn).Methods("POST")
-	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/", createTicket).Methods("POST")
-	router.HandleFunc("/api/boards/{boardID}/", updateBoard).Methods("PATCH")
-	router.HandleFunc("/api/boards/{boardID}/", getBoard).Methods("GET")
-	router.HandleFunc("/api/boards/user/{user}/", getBoardFromUser).Methods("GET")
-	router.HandleFunc("/api/boards/{boardID}/", deleteBoard).Methods("DELETE")
-	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/", deleteColumn).Methods("DELETE")
-	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/{ticketID}", deleteTicket).Methods("DELETE")
+	subrouter.HandleFunc("/boards/", createBoard).Methods("POST")
+	subrouter.HandleFunc("/boards/{boardID}/columns/", createColumn).Methods("POST")
+	subrouter.HandleFunc("/boards/{boardID}/columns/{columnID}/tickets/", createTicket).Methods("POST")
+	subrouter.HandleFunc("/boards/{boardID}/", updateBoard).Methods("PATCH")
+	subrouter.HandleFunc("/boards/{boardID}/", getBoard).Methods("GET")
+	subrouter.HandleFunc("/boards/user/{user}/", getBoardFromUser).Methods("GET")
+	subrouter.HandleFunc("/boards/{boardID}/", deleteBoard).Methods("DELETE")
+	subrouter.HandleFunc("/boards/{boardID}/columns/{columnID}/", deleteColumn).Methods("DELETE")
+	subrouter.HandleFunc("/boards/{boardID}/columns/{columnID}/tickets/{ticketID}", deleteTicket).Methods("DELETE")
 	// Handle GitHub OAuth authorization
 	router.HandleFunc("/oauth/redirect", func(w http.ResponseWriter, r *http.Request) {
 		githubAuthorize(w, r, clientID, clientSecret)
