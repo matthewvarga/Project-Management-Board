@@ -29,6 +29,7 @@ type malformedRequest struct {
 // Board Object
 type Board struct {
 	ID      primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	User    string             `json:"user" bson:"user"`
 	Title   string             `json:"title" bson:"title"`
 	Columns []Column           `json:"columns" bson:"columns"`
 }
@@ -170,6 +171,14 @@ func createBoard(w http.ResponseWriter, r *http.Request) {
 	newBoard.ID = primitive.NewObjectID()
 	newBoard.Columns = []Column{}
 
+	if newBoard.Title == "" {
+		http.Error(w, "Missing Required Data: title", http.StatusBadRequest)
+		return
+	} else if newBoard.User == "" {
+		http.Error(w, "Missing Required Data: user", http.StatusBadRequest)
+		return
+	}
+
 	// connect to db
 	db, err := loadMongoClient()
 	if err != nil {
@@ -182,10 +191,18 @@ func createBoard(w http.ResponseWriter, r *http.Request) {
 	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
-	_, err = boardsCollection.InsertOne(ctx, newBoard)
-	if err != nil {
-		log.Println(err.Error())
-		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+	filter := bson.M{"user": newBoard.User}
+	var board Board
+	err = boardsCollection.FindOne(ctx, filter).Decode(&board)
+	if err == mongo.ErrNoDocuments {
+		_, err = boardsCollection.InsertOne(ctx, newBoard)
+		if err != nil {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+			return
+		}
+	} else {
+		http.Error(w, "This user already has a board", http.StatusBadRequest)
 		return
 	}
 
@@ -365,6 +382,54 @@ func getBoard(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		if err == mongo.ErrNoDocuments {
 			http.Error(w, "The specified Board ID does not exist", http.StatusBadRequest)
+		} else {
+			log.Println(err.Error())
+			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		}
+		return
+	}
+
+	// send result
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(board)
+}
+
+func getBoardFromUser(w http.ResponseWriter, r *http.Request) {
+
+	// parse query vars
+	queryVars := mux.Vars(r)
+	user := queryVars["user"]
+
+	// connect to db
+	db, err := loadMongoClient()
+	if err != nil {
+		log.Println(err.Error())
+		http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+		return
+	}
+
+	// get board
+	boardsCollection := retrieveMongoCollection(db, "team_zero", "boards")
+	filter := bson.M{"user": user}
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	var board Board
+	err = boardsCollection.FindOne(ctx, filter).Decode(&board)
+	if err != nil {
+		if err == mongo.ErrNoDocuments {
+			var newBoard Board
+			newBoard.ID = primitive.NewObjectID()
+			newBoard.User = user
+			newBoard.Title = user + "'s Board"
+			newBoard.Columns = []Column{}
+			_, err = boardsCollection.InsertOne(ctx, newBoard)
+			if err != nil {
+				log.Println(err.Error())
+				http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
+				return
+			}
+			w.Header().Set("Content-Type", "application/json")
+			json.NewEncoder(w).Encode(newBoard)
 		} else {
 			log.Println(err.Error())
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
