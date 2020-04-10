@@ -42,11 +42,24 @@ type Column struct {
 
 // Ticket Object
 type Ticket struct {
-	ID          primitive.ObjectID `json:"id" bson:"_id,omitempty"`
-	Title       string             `json:"title" bson:"title"`
-	Description string             `json:"description" bson:"description"`
-	Assignee    string             `json:"assignee" bson:"assignee"`
-	Points      int                `json:"points" bson:"points"`
+	ID            primitive.ObjectID `json:"id" bson:"_id,omitempty"`
+	Title         string             `json:"title" bson:"title"`
+	Description   string             `json:"description" bson:"description"`
+	Assignee      string             `json:"assignee" bson:"assignee"`
+	Points        int                `json:"points" bson:"points"`
+	Creator       string             `json:"creator" bson:"creator"`
+	CreatorImgURL string             `json:"creator_img_url" bson:"creator_img_url"`
+	DateCreated   time.Time          `json:"date_created" bson:"date_created"`
+	Repository    string             `json:"repository" bson:"repository"`
+	Branch        string             `json:"branch" bson:"branch"`
+	Comments      []Comment          `json:"comments" bson:"comments"`
+}
+
+// Comment Object
+type Comment struct {
+	Author       string `json:"author" bson:"author"`
+	AuthorImgURL string `json:"author_img_url" bson:"author_img_url"`
+	Msg          string `json:"msg" bson:"msg"`
 }
 
 // loadMongoClient initializes a connection to the mongo server running on localhost
@@ -254,7 +267,6 @@ func createTicket(w http.ResponseWriter, r *http.Request) {
 		http.Error(w, "Invalid Column ID", http.StatusBadRequest)
 		return
 	}
-	newTicket.ID = primitive.NewObjectID()
 
 	// parse request body
 	err = decodeJSONBody(w, r, &newTicket)
@@ -266,6 +278,30 @@ func createTicket(w http.ResponseWriter, r *http.Request) {
 			log.Println(err.Error())
 			http.Error(w, http.StatusText(http.StatusInternalServerError), http.StatusInternalServerError)
 		}
+		return
+	}
+
+	newTicket.ID = primitive.NewObjectID()
+	newTicket.DateCreated = time.Now()
+	newTicket.Comments = []Comment{}
+
+	if newTicket.Title == "" {
+		http.Error(w, "Missing Required Data: title", http.StatusBadRequest)
+		return
+	} else if newTicket.Description == "" {
+		http.Error(w, "Missing Required Data: description", http.StatusBadRequest)
+		return
+	} else if newTicket.Creator == "" {
+		http.Error(w, "Missing Required Data: creator", http.StatusBadRequest)
+		return
+	} else if newTicket.CreatorImgURL == "" {
+		http.Error(w, "Missing Required Data: creator_img_url", http.StatusBadRequest)
+		return
+	} else if newTicket.Repository == "" {
+		http.Error(w, "Missing Required Data: repository", http.StatusBadRequest)
+		return
+	} else if newTicket.Branch == "" {
+		http.Error(w, "Missing Required Data: branch", http.StatusBadRequest)
 		return
 	}
 
