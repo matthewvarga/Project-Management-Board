@@ -37,7 +37,7 @@ func handleRoutes(router *mux.Router) {
 	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/", createTicket).Methods("POST")
 	router.HandleFunc("/api/boards/{boardID}/", updateBoard).Methods("PATCH")
 	router.HandleFunc("/api/boards/{boardID}/", getBoard).Methods("GET")
-	router.HandleFunc("/api/boards/user/{user}", getBoardFromUser).Methods("GET")
+	router.HandleFunc("/api/boards/user/{user}/", getBoardFromUser).Methods("GET")
 	router.HandleFunc("/api/boards/{boardID}/", deleteBoard).Methods("DELETE")
 	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/", deleteColumn).Methods("DELETE")
 	router.HandleFunc("/api/boards/{boardID}/columns/{columnID}/tickets/{ticketID}", deleteTicket).Methods("DELETE")
