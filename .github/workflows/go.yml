@@ -14,8 +14,6 @@ jobs:
     steps:  
 
     - name: SSH into VM
-      run: ssh -t root@138.197.169.114
-    - name: ls -a via ssh
       uses: garygrossgarten/github-action-ssh@release
       with:
         command: ls -a
