@@ -11,7 +11,14 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    steps:
+    steps:  
 
     - name: SSH into VM
       run: ssh -t root@138.197.169.114
+    - name: ls -a via ssh
+      uses: garygrossgarten/github-action-ssh@release
+      with:
+        command: ls -a
+        host: 138.197.169.114
+        username: root
+        password: {{ secrets.VM_ACCESS }}
