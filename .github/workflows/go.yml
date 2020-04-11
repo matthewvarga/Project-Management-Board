@@ -19,4 +19,4 @@ jobs:
         command: ls -a
         host: 138.197.169.114
         username: root
-        password: {{ secrets.VM_ACCESS }}
+        password: ${{ secrets.VM_ACCESS }}
