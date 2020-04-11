@@ -14,4 +14,4 @@ jobs:
     steps:
 
     - name: SSH into VM
-      run: ssh root@138.197.169.114
+      run: ssh -t root@138.197.169.114
