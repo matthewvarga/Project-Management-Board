@@ -97,4 +97,9 @@ func handleRoutes(router *mux.Router) {
 	router.HandleFunc("/api/{owner}/repos/{repo}/users", func(w http.ResponseWriter, r *http.Request) {
 		getRepositoryCollaborators(w, r, getToken(r))
 	}).Methods("GET")
+
+	// GET
+	router.HandleFunc("/api/logout", func(w http.ResponseWriter, r *http.Request) {
+		logout(w, r)
+	}).Methods("GET")
 }
