@@ -67,7 +67,7 @@ class Ticket extends Component {
                 </div>
                 
                 <div className={"ticket_short_desc"}>
-                    <span>opened by {this.state.tkt.creator || "unknown"} on {this.state.tkt.date_created || "unknown"}</span>
+                    <span>opened by {this.state.tkt.creator || "unknown"} on {(new Date(this.state.tkt.date_created)).toDateString() || "unknown"}</span>
                 </div>
 
             </div>
