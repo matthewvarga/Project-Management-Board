@@ -92,9 +92,10 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 
 	// set the cookie for the username
 	userCookie := &http.Cookie{
-		Name:  "username",
-		Value: profile.Login,
-		Path:  "/",
+		Name:   "username",
+		Value:  profile.Login,
+		Path:   "/",
+		Secure: true,
 	}
 
 	http.SetCookie(w, userCookie)
