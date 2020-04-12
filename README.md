@@ -126,7 +126,7 @@ TODO: add instructions on how to deploy to production environment.
 
 production ip: 138.197.169.114
 
-domain: project-management.tools
+domain: https://project-management.tools
 
 
 iptables: `sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000`
