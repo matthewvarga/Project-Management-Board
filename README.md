@@ -91,7 +91,7 @@ To begin developing the application locally, follow the instructions listed belo
 5) if developing **only** the frontend without need of the server to be running, run `npm start` from *static*, and a development server will open on `localhost:8080`.
 6) if developing server or need server running follow the steps below:
     - run: `npm run build` from *root* to **compile(todo find better word)** javascript files into single file within *dist*
-    - run `go run .` from *root*, this will open a development server on `localhost:3000`
+    - run `go run .` from *root*, this will open a development server on `project-management.tools`
 
 ## Prerequisites / Dependencies
 
@@ -126,7 +126,7 @@ TODO: add instructions on how to deploy to production environment.
 
 production ip: 138.197.169.114
 
-domain: project-management.tools
+domain: https://project-management.tools
 
 
 iptables: `sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000`
@@ -137,3 +137,16 @@ also add to `/etc/rc.local` to save change through machine restarts
 The frontend setup steps were followed from [here](https://www.valentinog.com/blog/babel/?fbclid=IwAR3GD55NNS9rAWAEn3QS1TSmrLmIVr7EARtUgmRHD5AUlW9ETj7A7flAluQ).
 
 Tutorial for GitHub OAuth was followed from here: https://www.sohamkamani.com/blog/golang/2018-06-24-oauth-with-golang/
+
+## Video Demo
+
+https://www.youtube.com/watch?v=cDEPkOgX_Fs&feature=youtu.be
+
+## Documentation
+
+https://github.com/UTSCC09/project-team_zero/tree/master/docs
+
+## App URL
+
+https://project-management.tools
+

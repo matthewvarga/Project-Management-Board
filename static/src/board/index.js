@@ -10,6 +10,42 @@ class Board extends Component {
     constructor(props) {
         super(props);
 
+        let mockBoardData = {
+            "columns": [
+                {
+                    "id": 11,
+                    "title": "column A",
+                    "tickets": [
+                        {
+                            "id": 1,
+                            "title": "ticket A.1"
+                        },
+                        {
+                            "id": 2,
+                            "title": "ticket A.2"
+                        },
+                        {
+                            "id": 3,
+                            "title": "ticket A.3"
+                        }
+                    ]
+                },
+                {
+                    "id": 22,
+                    "title": "column B",
+                    "tickets": [
+                        {
+                            "id": 4,
+                            "title": "ticket B.1"
+                        },
+                        {
+                            "id": 5,
+                            "title": "ticket B.2"
+                        }
+                    ]
+                }
+            ]
+        }
         this.state = {
             draggedTicketID: null,
             draggedColumnID: null,
@@ -47,7 +83,7 @@ class Board extends Component {
 
     addColumn() {
         // TODO: add new column feature
-        fetch("http://localhost:3000/api/boards/" + this.state.board.id + "/columns/", {
+        fetch("https://project-management.tools/api/boards/" + this.state.board.id + "/columns/", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -73,7 +109,7 @@ class Board extends Component {
     }
 
     updateBoardDB() {
-        fetch("http://localhost:3000/api/boards/" + this.props.board.id + "/", {
+        fetch("https://project-management.tools/api/boards/" + this.props.board.id + "/", {
             method: 'PATCH',
             mode: 'cors',
             headers: {
@@ -90,7 +126,7 @@ class Board extends Component {
     retrieveBoard() {
 
         let username = this.getCookie("username");
-        fetch("http://localhost:3000/api/boards/user/" + username + "/", {
+        fetch("https://project-management.tools/api/boards/user/" + username + "/", {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -115,7 +151,7 @@ class Board extends Component {
      * retrieve a list of signed in users github repos
      */
     retrieveRepos() {
-        fetch("http://localhost:3000/api/repos", {
+        fetch("https://project-management.tools/api/repos", {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -394,6 +430,16 @@ class Board extends Component {
                 board: board
             });
         }
+    }
+
+    /**
+     * prevent event propogation when leaving a ticket during drag.
+     * @param {*} e 
+     * @param {*} tktID 
+     */
+    tktDragLeave(e, tktID) {
+        e.stopPropagation();
+        e.preventDefault();
     }
 
     /**

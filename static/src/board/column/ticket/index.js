@@ -32,7 +32,7 @@ class Ticket extends Component {
         let colID = this.props.colID;
         let tktID = this.state.tkt.id;
 
-        fetch("http://localhost:3000/api/boards/" + boardID + "/columns/" + colID + "/tickets/" + tktID, {
+        fetch("https://project-management.tools/api/boards/" + boardID + "/columns/" + colID + "/tickets/" + tktID, {
             method: 'DELETE',
             mode: 'cors',
             headers: {
@@ -67,7 +67,7 @@ class Ticket extends Component {
                 </div>
                 
                 <div className={"ticket_short_desc"}>
-                    <span>opened by {this.state.tkt.creator || "unknown"} on {this.state.tkt.date_created || "unknown"}</span>
+                    <span>opened by {this.state.tkt.creator || "unknown"} on {(new Date(this.state.tkt.date_created)).toDateString() || "unknown"}</span>
                 </div>
 
             </div>

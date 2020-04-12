@@ -1,6 +1,7 @@
 package main
 
 import (
+	"crypto/tls"
 	"log"
 	"net/http"
 	"os"
@@ -9,6 +10,7 @@ import (
 
 	"github.com/gorilla/handlers"
 	"github.com/gorilla/mux"
+	"golang.org/x/crypto/acme/autocert"
 )
 
 // spaHandler implements the http.Handler interface, so we can use it
@@ -50,23 +52,33 @@ func main() {
 	// handle api routes
 	handleRoutes(router)
 
+	// handle static files
 	spa := spaHandler{staticPath: "./static/dist", indexPath: "index.html"}
 	router.PathPrefix("/").Handler(spa)
 
+	// ssl cert manager
+	certManager := autocert.Manager{
+		Prompt: autocert.AcceptTOS,
+		Cache:  autocert.DirCache("certs"),
+	}
+
 	// configure basic cors middleware
 	headersOk := handlers.AllowedHeaders([]string{"Accept, Content-Type, Content-Length, Accept-Encoding, Authorization"})
-	originsOk := handlers.AllowedOrigins([]string{"http://localhost:8080"})
+	originsOk := handlers.AllowedOrigins([]string{"https://localhost:8080"})
 	methodsOk := handlers.AllowedMethods([]string{"GET", "HEAD", "POST", "PUT", "OPTIONS"})
 
 	// serve the webpage
 	srv := &http.Server{
+		Addr:    "project-management.tools:443",
 		Handler: handlers.CORS(originsOk, headersOk, methodsOk)(router),
-		Addr:    "localhost:3000",
+		TLSConfig: &tls.Config{
+			GetCertificate: certManager.GetCertificate,
+		},
 		// Good practice: enforce timeouts for servers you create!
 		WriteTimeout: 15 * time.Second,
 		ReadTimeout:  15 * time.Second,
 	}
 
-	log.Println("listening on port: 3000")
-	log.Fatal(srv.ListenAndServe())
+	go http.ListenAndServe("project-management.tools:3000", certManager.HTTPHandler(nil))
+	log.Fatal(srv.ListenAndServeTLS("", ""))
 }

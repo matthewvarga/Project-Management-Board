@@ -75,7 +75,7 @@ class TicketPage extends Component {
     retrieveBoard() {
         let username = this.getCookie("username");
         if (!username) return;
-        fetch("http://localhost:3000/api/boards/user/" + username + "/", {
+        fetch("https://project-management.tools/api/boards/user/" + username + "/", {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -122,7 +122,7 @@ class TicketPage extends Component {
 
         this.props.setBoard(newboard);
         // update board in db
-        fetch("http://localhost:3000/api/boards/" + this.props.board.id + "/", {
+        fetch("https://project-management.tools/api/boards/" + this.props.board.id + "/", {
             method: 'PATCH',
             mode: 'cors',
             headers: {
@@ -152,16 +152,16 @@ class TicketPage extends Component {
                     < div className={"ticket_page_header_row"}>
                         <div className={"ticket_page_header"}>
                             <h1 className={"ticket_page_title"}>{this.state.ticket.title || "Ticket Title"}</h1>
-                            <span className={"ticket_page_header_desc"}>{this.state.ticket.creator || "?"} opened this ticket on {this.state.ticket.date_created || "?"}</span>
+                            <span className={"ticket_page_header_desc"}>{this.state.ticket.creator || "?"} opened this ticket on {(new Date(this.state.ticket.date_created)).toDateString() || "?"}</span>
                         </div>
                     </div>
                     <ExpandableRow title={"Details"} isOpen={true}>
                         <TicketDetails 
-                            repo={this.state.ticket.repo}
+                            repo={this.state.ticket.repository}
                             branch={this.state.ticket.branch}
                             assignee={this.state.ticket.assignee}
                             points={this.state.ticket.points}
-                            dateCreated={this.state.ticket.date_created}
+                            dateCreated={(new Date(this.state.ticket.date_created)).toDateString()}
                             author={this.state.ticket.creator}/>
                     </ExpandableRow>
                     <ExpandableRow title={"Description"} isOpen={true}>
