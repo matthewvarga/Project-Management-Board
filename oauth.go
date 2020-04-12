@@ -98,6 +98,15 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	}
 
 	http.SetCookie(w, userCookie)
+
+	testCookie := &http.Cookie{
+		Name:  "test",
+		Value: "hello world",
+		Path:  "/",
+	}
+
+	http.SetCookie(w, testCookie)
+
 	if t.AccessToken != "" {
 		amw.tokenUsers[t.AccessToken] = profile.Login
 	}
