@@ -57,6 +57,37 @@ class NewTicketForm extends Component {
         // TODO: more input verification
         if (!title) return;
 
+        // create new branch with github
+        if(sourceBranch && newBranch) {
+
+
+            let slshIndex = repo.indexOf("/");
+            slshIndex += 1;
+
+            fetch("http://localhost:3000/api/branches", {
+            method: 'POST',
+            mode: 'cors',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify({
+                "sourceBranch": sourceBranch,
+                "newBranch": newBranch,
+                "repo": repo.substring(slshIndex, repo.length),
+                "owner": this.props.board.user
+            })
+        }).then((response) => {
+            // error
+            if (!response.ok) return;
+
+            // if response is okay, read data
+            response.json().then(data => {
+                console.log(data);
+            });   
+        });
+        }
+
+        // update board
         fetch("http://localhost:3000/api/boards/" + this.props.board.id +"/columns/" + this.props.colID +"/tickets/", {
             method: 'POST',
             mode: 'cors',
