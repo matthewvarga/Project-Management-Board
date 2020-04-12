@@ -92,9 +92,8 @@ class Column extends Component {
                         <h3 className={"column_title"}>{this.state.col.title || "Board Title"}</h3>
                     </div>
                     <div className={"column_header_container"}>
-                        {/* <IconPlus className={"column_plus_icon"} onClick={(e) => this.addTicket(e)}/> */}
                         <Modal ref={this.modalRef} button={<IconPlus className={"modal_plus_icon"} onClick={() => {}}/>}
-                            title={"create new ticket"}>
+                            title={"Create New Ticket"}>
                             <NewTicketForm colID={this.state.col.id} onSubmitTicket={() => this.closeCreateTicketModal()}/>
                         </Modal>
                         <IconDelete className={"delete-col"} onClick={() => this.deleteCol()}/>
