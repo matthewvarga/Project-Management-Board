@@ -137,3 +137,7 @@ also add to `/etc/rc.local` to save change through machine restarts
 The frontend setup steps were followed from [here](https://www.valentinog.com/blog/babel/?fbclid=IwAR3GD55NNS9rAWAEn3QS1TSmrLmIVr7EARtUgmRHD5AUlW9ETj7A7flAluQ).
 
 Tutorial for GitHub OAuth was followed from here: https://www.sohamkamani.com/blog/golang/2018-06-24-oauth-with-golang/
+
+## Video Demo
+
+https://www.youtube.com/watch?v=cDEPkOgX_Fs&feature=youtu.be
