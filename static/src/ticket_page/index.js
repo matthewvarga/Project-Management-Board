@@ -152,7 +152,7 @@ class TicketPage extends Component {
                     < div className={"ticket_page_header_row"}>
                         <div className={"ticket_page_header"}>
                             <h1 className={"ticket_page_title"}>{this.state.ticket.title || "Ticket Title"}</h1>
-                            <span className={"ticket_page_header_desc"}>{this.state.ticket.creator || "?"} opened this ticket on {this.state.ticket.date_created || "?"}</span>
+                            <span className={"ticket_page_header_desc"}>{this.state.ticket.creator || "?"} opened this ticket on {(new Date(this.state.ticket.date_created)).toDateString() || "?"}</span>
                         </div>
                     </div>
                     <ExpandableRow title={"Details"} isOpen={true}>
