@@ -67,6 +67,7 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 		Value:    t.AccessToken,
 		Path:     "/",
 		HttpOnly: true,
+		Secure:   true,
 	}
 
 	http.SetCookie(w, cookie)
