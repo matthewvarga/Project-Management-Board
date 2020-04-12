@@ -161,7 +161,7 @@ class TicketPage extends Component {
                             branch={this.state.ticket.branch}
                             assignee={this.state.ticket.assignee}
                             points={this.state.ticket.points}
-                            dateCreated={this.state.ticket.date_created}
+                            dateCreated={(new Date(this.state.ticket.date_created)).toDateString()}
                             author={this.state.ticket.creator}/>
                     </ExpandableRow>
                     <ExpandableRow title={"Description"} isOpen={true}>
