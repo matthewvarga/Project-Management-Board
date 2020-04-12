@@ -27,7 +27,7 @@ class TicketDetails extends Component {
         slshIndex += 1;
         repo = repo.substring(slshIndex, repo.length)
 
-        fetch("http://localhost:3000/api/" + this.props.author + "/repos/" + repo + "/branches", {
+        fetch("https://project-management.tools/api/" + this.props.author + "/repos/" + repo + "/branches", {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -75,7 +75,7 @@ class TicketDetails extends Component {
         slshIndex += 1;
         repo = repo.substring(slshIndex, repo.length)
 
-        fetch("http://localhost:3000/api/repos/pulls", {
+        fetch("https://project-management.tools/api/repos/pulls", {
             method: 'POST',
             mode: 'cors',
             headers: {

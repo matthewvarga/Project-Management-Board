@@ -91,7 +91,7 @@ To begin developing the application locally, follow the instructions listed belo
 5) if developing **only** the frontend without need of the server to be running, run `npm start` from *static*, and a development server will open on `localhost:8080`.
 6) if developing server or need server running follow the steps below:
     - run: `npm run build` from *root* to **compile(todo find better word)** javascript files into single file within *dist*
-    - run `go run .` from *root*, this will open a development server on `localhost:3000`
+    - run `go run .` from *root*, this will open a development server on `project-management.tools`
 
 ## Prerequisites / Dependencies
 

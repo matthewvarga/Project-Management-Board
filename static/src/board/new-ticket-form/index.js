@@ -64,7 +64,7 @@ class NewTicketForm extends Component {
             let slshIndex = repo.indexOf("/");
             slshIndex += 1;
 
-            fetch("http://localhost:3000/api/branches", {
+            fetch("https://project-management.tools/api/branches", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -88,7 +88,7 @@ class NewTicketForm extends Component {
         }
 
         // update board
-        fetch("http://localhost:3000/api/boards/" + this.props.board.id +"/columns/" + this.props.colID +"/tickets/", {
+        fetch("https://project-management.tools/api/boards/" + this.props.board.id +"/columns/" + this.props.colID +"/tickets/", {
             method: 'POST',
             mode: 'cors',
             headers: {
@@ -151,18 +151,22 @@ class NewTicketForm extends Component {
      * @param {*} owner - owner name
      */
     retrieveBranches(repo, owner) {
-        fetch("http://localhost:3000/api/" + owner + "/repos/" + repo + "/branches", {
+        fetch("https://project-management.tools/api/" + owner + "/repos/" + repo + "/branches", {
             method: 'GET',
             mode: 'cors',
             headers: {
                 'Accept': 'application/json; charset=UTF-8',
             }
         }).then((response) => {
+
+            console.log(response);
             // error
             if (!response.ok) return;
 
             // if response is okay, read data
             response.json().then(data => {
+
+                console.log(data);
                 let repoBranches = ["None", "Create New Branch"];
                 for (let i = 0; i < data.length; i++) {
                     repoBranches.push(data[i].name);
@@ -184,7 +188,7 @@ class NewTicketForm extends Component {
      * @param {*} owner - owner name
      */
     retrieveContributers(repo, owner) {
-        fetch("http://localhost:3000/api/" + owner + "/repos/" + repo + "/users", {
+        fetch("https://project-management.tools/api/" + owner + "/repos/" + repo + "/users", {
             method: 'GET',
             mode: 'cors',
             headers: {

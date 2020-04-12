@@ -75,7 +75,7 @@ class TicketPage extends Component {
     retrieveBoard() {
         let username = this.getCookie("username");
         if (!username) return;
-        fetch("http://localhost:3000/api/boards/user/" + username + "/", {
+        fetch("https://project-management.tools/api/boards/user/" + username + "/", {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -122,7 +122,7 @@ class TicketPage extends Component {
 
         this.props.setBoard(newboard);
         // update board in db
-        fetch("http://localhost:3000/api/boards/" + this.props.board.id + "/", {
+        fetch("https://project-management.tools/api/boards/" + this.props.board.id + "/", {
             method: 'PATCH',
             mode: 'cors',
             headers: {

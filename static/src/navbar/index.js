@@ -16,7 +16,7 @@ class NavBar extends Component {
     }
 
     logout() {
-        fetch("http://localhost:3000/api/signout", {
+        fetch("https://project-management.tools/api/signout", {
             method: 'GET',
             mode: 'cors',
             headers: {

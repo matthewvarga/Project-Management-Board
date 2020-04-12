@@ -32,7 +32,7 @@ class Ticket extends Component {
         let colID = this.props.colID;
         let tktID = this.state.tkt.id;
 
-        fetch("http://localhost:3000/api/boards/" + boardID + "/columns/" + colID + "/tickets/" + tktID, {
+        fetch("https://project-management.tools/api/boards/" + boardID + "/columns/" + colID + "/tickets/" + tktID, {
             method: 'DELETE',
             mode: 'cors',
             headers: {
