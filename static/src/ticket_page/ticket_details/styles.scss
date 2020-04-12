@@ -2,6 +2,11 @@
 
 .ticket_details {
     display: flex;
+    flex-direction: column;
+}
+
+.ticket_details_row_container {
+    display: flex;
     flex-direction: row;
 }
 
@@ -14,13 +19,43 @@
 .ticket_details_row {
     display: flex;
     flex-direction: row;
+    align-items: center;
     padding: 5px 0;
+
+    .dropdown_title_row {
+        padding: 3px;
+    }
+
+    .form_dropdown_icon {
+        width: 13px;
+        height: 13px;
+        margin-left: 5px;
+    }
 }
 
 .ticket_details_title {
     font-size: 16px;
+
+    &.create_pr {
+        margin-right: 10px;
+    }
 }
 
 .ticket_details_value {
     padding: 0 0 0 8px;
+}
+
+.ticket_details_dropdown {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 5px 0 0;
+}
+
+.ticket_details_create_btn {
+    color: $secondary-text-highlight-light;
+    padding: 3px 8px;
+    border: 1px solid $secondary-text-highlight-light;
+    border-radius: 5px;
+    cursor: pointer;
 }

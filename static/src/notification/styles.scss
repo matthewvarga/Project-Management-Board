@@ -1,0 +1,61 @@
+@import "../styles/variables";
+
+.notification {
+    display: flex;
+    flex-direction: column;
+    background: $primary-background-light;
+    position: fixed;
+    bottom: 30px;
+    right: 0;
+    padding: 15px;
+    border-radius: 5px;
+    border-left: 5px solid #44BD00;
+    z-index: $modal-content-z-index;
+    box-shadow: $material-box-shadow-light-3;
+    margin-right: 30px;
+    &.hidden {
+        display: none;
+    }
+}
+
+.close_row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
+.content_row {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: center;
+}
+
+.text {
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: flex-start;
+    padding: 0 15px;
+}
+
+.title {
+    font-weight: 700;
+}
+
+.icon_check, .icon_close {
+    width: 20px;
+    height: 20px;
+}
+
+.icon_close {
+    cursor: pointer;
+    fill: $primary-text-light;
+}
+
+.icon_check {
+    padding: 5px;
+    border-radius: 100%;
+    background: #44BD00;
+    fill: $primary-background-light;
+}
