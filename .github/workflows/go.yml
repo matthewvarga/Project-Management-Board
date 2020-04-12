@@ -16,7 +16,7 @@ jobs:
     - name: SSH into VM and run deploy script
       uses: garygrossgarten/github-action-ssh@release
       with:
-        command: sh deploy.sh > /dev/null 2>&1
+        command: sh deploy.sh
         host: 138.197.169.114
         username: root
         password: ${{ secrets.VM_ACCESS }}
