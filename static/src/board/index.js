@@ -83,7 +83,7 @@ class Board extends Component {
 
     addColumn() {
         // TODO: add new column feature
-        fetch("https://localhost:3000/api/boards/" + this.state.board.id + "/columns/", {
+        fetch("https://project-management.tools/api/boards/" + this.state.board.id + "/columns/", {
             method: 'POST',
             mode: 'cors',
             headers: {
