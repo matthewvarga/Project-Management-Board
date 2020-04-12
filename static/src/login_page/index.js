@@ -35,7 +35,7 @@ class LoginPage extends Component {
         return (
             <div className={"login_page " + (this.props.className ? this.props.className : "")} >
                 <a className={"github_btn"}
-                    href={"https://github.com/login/oauth/authorize?scope=repo&client_id=ecd70f356de063418ef0&redirect_uri=https://project-management.tools/oauth/redirect"}> 
+                    href={"https://github.com/login/oauth/authorize?scope=repo&client_id=e01c4cb7708610450afc&redirect_uri=https://project-management.tools/oauth/redirect"}> 
                     <IconGithub className={"github_icon"} /> Login with GitHub</a>
             </div>
         )
