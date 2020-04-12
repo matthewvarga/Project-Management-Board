@@ -140,7 +140,6 @@ class TicketPage extends Component {
 
 
     render() {
-        console.log(this.state.ticket);
         if(!this.getCookie("username")) {
             return (
                 <Redirect to={"/"} />
