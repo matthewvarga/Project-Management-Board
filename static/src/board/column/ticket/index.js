@@ -62,12 +62,12 @@ class Ticket extends Component {
             >
 
                 <div className={"ticket-header-row"}>
-                    <Link to={"/tickets/" + this.state.tkt.id} className={"ticket_title"}>{this.state.tkt.title || "Ticket title"}</Link>
+                    <Link to={this.state.tkt.id} className={"ticket_title"}>{this.state.tkt.title || "Ticket title"}</Link>
                     <IconDelete className={"delete-icon"} onClick={() => this.deleteTicket()}/>
                 </div>
                 
                 <div className={"ticket_short_desc"}>
-                    <span>#{this.state.tkt.number || "?"} opened by {this.state.tkt.creator || "unknown"}</span>
+                    <span>opened by {this.state.tkt.creator || "unknown"} on {this.state.tkt.date_created || "unknown"}</span>
                 </div>
 
             </div>

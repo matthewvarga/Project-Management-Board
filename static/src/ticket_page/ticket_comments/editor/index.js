@@ -10,7 +10,7 @@ class Editor extends Component {
         super(props);
 
         this.state = {
-            value: RichTextEditor.createEmptyValue()
+            value: (props.value ? RichTextEditor.createValueFromString(props.value, 'html') : RichTextEditor.createEmptyValue())
         }
     }
 
@@ -23,13 +23,19 @@ class Editor extends Component {
         this.setState({ 
             value: val
         });
-        
+    }
+
+    reset() {
+        this.setState({
+            value: RichTextEditor.createEmptyValue()
+        })
     }
 
     render() {
         return (
             <div className={"rte " + (this.props.className ? this.props.className : "")}>
                 <RichTextEditor
+                    readOnly={this.props.readOnly || false}
                     value={this.state.value}
                     onChange={(val) => this.onChange(val)}
                     placeholder={"Write a comment here."}

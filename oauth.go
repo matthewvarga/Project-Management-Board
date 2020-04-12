@@ -5,6 +5,7 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"time"
 )
 
 // OAuthAccessResponse ...
@@ -96,8 +97,32 @@ func githubAuthorize(w http.ResponseWriter, r *http.Request, clientID, clientSec
 	}
 
 	http.SetCookie(w, userCookie)
+	if t.AccessToken != "" {
+		amw.tokenUsers[t.AccessToken] = profile.Login
+	}
 
 	// redirect to home page
 	w.Header().Set("Location", "/")
 	w.WriteHeader(http.StatusFound)
+}
+
+func logout(w http.ResponseWriter, r *http.Request) {
+	tCookie := &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+	}
+	uCookie := &http.Cookie{
+		Name:     "username",
+		Value:    "",
+		Path:     "/",
+		Expires:  time.Unix(0, 0),
+		HttpOnly: true,
+	}
+
+	http.SetCookie(w, tCookie)
+	http.SetCookie(w, uCookie)
+	w.WriteHeader(http.StatusOK)
 }

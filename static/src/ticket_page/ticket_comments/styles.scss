@@ -3,6 +3,7 @@
 .ticket_comments {
     display: flex;
     flex-direction: column;
+    padding: 0 0 64px 0;
 }
 
 .ticket_comments_rte_row {
@@ -26,10 +27,18 @@
 }
 
 .ticket_comments_btn {
-    margin: 0 0 0 60px;
+    // margin: 0 0 0 60px;
     color: $primary-text-lighter-light;
     border: 1px solid $primary-text-lighter-light;
     border-radius: 5px;
     padding: 5px 8px;
     cursor: pointer;
+}
+
+.ticket_comments_comment_container {
+    display: flex;
+    flex-direction: column;
+    padding: 10px;
+    margin: 10px 0;
+    box-shadow: $material-box-shadow-light-1;
 }

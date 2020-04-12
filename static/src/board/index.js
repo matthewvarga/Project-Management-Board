@@ -16,7 +16,7 @@ class Board extends Component {
             board: this.props.board
         };
 
-        if (!this.props.board) this.retrieveBoard();
+        if (!this.props.board || !this.state.board) this.retrieveBoard();
         if (!this.props.repoList) this.retrieveRepos();
     }
 
@@ -27,6 +27,22 @@ class Board extends Component {
                 board: this.props.board
             });
         }
+    }
+
+    getCookie(cname) {
+        let name = cname + "=";
+        let decodedCookie = decodeURIComponent(document.cookie);
+        let ca = decodedCookie.split(';');
+        for(let i = 0; i <ca.length; i++) {
+            let c = ca[i];
+          while (c.charAt(0) == ' ') {
+            c = c.substring(1);
+          }
+          if (c.indexOf(name) == 0) {
+            return c.substring(name.length, c.length);
+          }
+        }
+        return null;
     }
 
     addColumn() {
@@ -57,7 +73,7 @@ class Board extends Component {
     }
 
     updateBoardDB() {
-        fetch("http://localhost:3000/api/boards/5e6aca0522a1867fe4086dbd/", {
+        fetch("http://localhost:3000/api/boards/" + this.props.board.id + "/", {
             method: 'PATCH',
             mode: 'cors',
             headers: {
@@ -72,7 +88,9 @@ class Board extends Component {
     }
 
     retrieveBoard() {
-        fetch("http://localhost:3000/api/boards/5e6aca0522a1867fe4086dbd/", {
+
+        let username = this.getCookie("username");
+        fetch("http://localhost:3000/api/boards/user/" + username + "/", {
             method: 'GET',
             mode: 'cors',
             headers: {
@@ -430,7 +448,7 @@ class Board extends Component {
                 <NavBar className={"board_navbar"}/>
                 <div className={"board_content"}>
                     <div className={"board_header"}>
-                        <h1 className={"board_title"}>{this.props.title || "Board Title"}</h1>
+                        <h1 className={"board_title"}>{this.state.board ? this.state.board.title : "Board Title"}</h1>
                     </div>
                     <div className={"board_columns"}>
                         {this.populateColumns(this.state.board)}
