@@ -223,3 +223,26 @@ func createPullRequest(w http.ResponseWriter, r *http.Request, token string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.Write(body)
 }
+
+/**
+Signs out the current user and clears the cookies
+**/
+func signout(w http.ResponseWriter, r *http.Request) {
+	// set the cookie for the OAuth token
+	cookie := &http.Cookie{
+		Name:     "token",
+		Value:    "",
+		Path:     "/",
+		HttpOnly: true,
+	}
+	http.SetCookie(w, cookie)
+
+	// set the cookie for the username
+	userCookie := &http.Cookie{
+		Name:  "username",
+		Value: "",
+		Path:  "/",
+	}
+
+	http.SetCookie(w, userCookie)
+}
