@@ -25,14 +25,14 @@ ReactDOM.render(
     <Provider store={store}>
         <Router>
             <Switch>
-                <Route path={"/tickets/:id"} component={TicketPage}/>
+                
                 <PrivateRoute path={"/dashboard"}>
                     <Board/>
                 </PrivateRoute>
+                <Route path={"/:id"} component={TicketPage}/>
                 <Route path={"/"}>
                     <LoginPage />
                 </Route>
-                
             </Switch>
         </Router>
     </Provider>,    

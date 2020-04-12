@@ -6,6 +6,7 @@ import (
 	"io/ioutil"
 	"log"
 	"net/http"
+
 	"github.com/gorilla/mux"
 )
 
@@ -35,7 +36,7 @@ type Repository struct {
 	Owner string
 }
 
-// PullReques ...
+// PullRequest ...
 type PullRequest struct {
 	Title string `json:"title"`
 	Body  string `json:"body"`

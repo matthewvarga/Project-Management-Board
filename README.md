@@ -128,6 +128,10 @@ production ip: 138.197.169.114
 
 domain: project-management.tools
 
+
+iptables: `sudo iptables -t nat -A PREROUTING -i eth0 -p tcp --dport 80 -j REDIRECT --to-port 3000`
+also add to `/etc/rc.local` to save change through machine restarts
+
 ## Acknowledgments
 
 The frontend setup steps were followed from [here](https://www.valentinog.com/blog/babel/?fbclid=IwAR3GD55NNS9rAWAEn3QS1TSmrLmIVr7EARtUgmRHD5AUlW9ETj7A7flAluQ).

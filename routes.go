@@ -83,17 +83,17 @@ func handleRoutes(router *mux.Router) {
 		createPullRequest(w, r, getToken(r))
 	}).Methods("POST")
 
-	// POST to retrieve branches for given repo
+	// GET to retrieve branches for given repo
 	router.HandleFunc("/api/{owner}/repos/{repo}/branches", func(w http.ResponseWriter, r *http.Request) {
 		getBranches(w, r, getToken(r))
 	}).Methods("GET")
 
-	//GET
+	// GET
 	router.HandleFunc("/api/repos", func(w http.ResponseWriter, r *http.Request) {
 		getRepositories(w, r, getToken(r))
 	}).Methods("GET")
 
-	//POST to get a list of collaborators
+	// GET to get a list of collaborators
 	router.HandleFunc("/api/{owner}/repos/{repo}/users", func(w http.ResponseWriter, r *http.Request) {
 		getRepositoryCollaborators(w, r, getToken(r))
 	}).Methods("GET")

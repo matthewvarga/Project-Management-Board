@@ -16,7 +16,7 @@ class NavBar extends Component {
                     <span className={"navbar_links"}>
                         <Link to={"/dashboard"} className={"navbar_link"}>Dashboard</Link>
                         <span className={"navbar_divider"}> > </span>
-                        <Link to={"/tickets/"+ this.props.ticket} className={"navbar_link_active"}>Ticket #{this.props.ticket}</Link>
+                        <Link to={this.props.ticket} className={"navbar_link_active"}>Ticket #{this.props.ticket}</Link>
                     </span>
                     
                     <a className={"navbar_logout"}>Logout</a>

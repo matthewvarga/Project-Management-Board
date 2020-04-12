@@ -53,15 +53,6 @@ class NewTicketForm extends Component {
         let description = this.descRef.current.value;
         let points = parseInt(this.pointsRef.current.value);
 
-        // console.log("title: " + title);
-        // console.log("repo: " + repo);
-        // console.log("link branch: " + linkBranch);
-        // console.log("source branch: " + sourceBranch);
-        // console.log("new branch: " + newBranch);
-        // console.log("assignee: " + assignee);
-        // console.log("desc: " + description);
-        // console.log("points: " + points);
-
         // title is only required field
         // TODO: more input verification
         if (!title) return;
@@ -76,7 +67,11 @@ class NewTicketForm extends Component {
                 "title": title,
                 "description": description,
                 "assignee": assignee,
-                "points": points
+                "points": points,
+                "creator": this.props.board.user,
+                "creator_img_url": "https://pecb.com/conferences/wp-content/uploads/2017/10/no-profile-picture.jpg",
+                "repository": repo,
+                "branch": (newBranch ? newBranch : linkBranch)
             })
         }).then((response) => {
             // error
@@ -125,16 +120,12 @@ class NewTicketForm extends Component {
      * @param {*} owner - owner name
      */
     retrieveBranches(repo, owner) {
-        fetch("http://localhost:3000/api/repos/branches", {
-            method: 'POST',
+        fetch("http://localhost:3000/api/" + owner + "/repos/" + repo + "/branches", {
+            method: 'GET',
             mode: 'cors',
             headers: {
                 'Accept': 'application/json; charset=UTF-8',
-            },
-            body: JSON.stringify({
-                repo: repo,
-                owner: owner
-            })
+            }
         }).then((response) => {
             // error
             if (!response.ok) return;
@@ -162,16 +153,12 @@ class NewTicketForm extends Component {
      * @param {*} owner - owner name
      */
     retrieveContributers(repo, owner) {
-        fetch("http://localhost:3000/api/repos/users", {
-            method: 'POST',
+        fetch("http://localhost:3000/api/" + owner + "/repos/" + repo + "/users", {
+            method: 'GET',
             mode: 'cors',
             headers: {
                 'Accept': 'application/json; charset=UTF-8',
-            },
-            body: JSON.stringify({
-                repo: repo,
-                owner: owner
-            })
+            }
         }).then((response) => {
             // error
             if (!response.ok) return;

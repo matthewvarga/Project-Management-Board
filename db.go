@@ -305,21 +305,6 @@ func createTicket(w http.ResponseWriter, r *http.Request) {
 	if newTicket.Title == "" {
 		http.Error(w, "Missing Required Data: title", http.StatusBadRequest)
 		return
-	} else if newTicket.Description == "" {
-		http.Error(w, "Missing Required Data: description", http.StatusBadRequest)
-		return
-	} else if newTicket.Creator == "" {
-		http.Error(w, "Missing Required Data: creator", http.StatusBadRequest)
-		return
-	} else if newTicket.CreatorImgURL == "" {
-		http.Error(w, "Missing Required Data: creator_img_url", http.StatusBadRequest)
-		return
-	} else if newTicket.Repository == "" {
-		http.Error(w, "Missing Required Data: repository", http.StatusBadRequest)
-		return
-	} else if newTicket.Branch == "" {
-		http.Error(w, "Missing Required Data: branch", http.StatusBadRequest)
-		return
 	}
 
 	// connect to db
