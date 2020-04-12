@@ -141,3 +141,12 @@ Tutorial for GitHub OAuth was followed from here: https://www.sohamkamani.com/bl
 ## Video Demo
 
 https://www.youtube.com/watch?v=cDEPkOgX_Fs&feature=youtu.be
+
+## Documentation
+
+https://github.com/UTSCC09/project-team_zero/tree/master/docs
+
+## App URL
+
+https://project-management.tools
+
