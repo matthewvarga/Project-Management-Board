@@ -140,6 +140,7 @@ class TicketPage extends Component {
 
 
     render() {
+        console.log(this.state.ticket);
         if(!this.getCookie("username")) {
             return (
                 <Redirect to={"/"} />
@@ -157,7 +158,7 @@ class TicketPage extends Component {
                     </div>
                     <ExpandableRow title={"Details"} isOpen={true}>
                         <TicketDetails 
-                            repo={this.state.ticket.repo}
+                            repo={this.state.ticket.repository}
                             branch={this.state.ticket.branch}
                             assignee={this.state.ticket.assignee}
                             points={this.state.ticket.points}

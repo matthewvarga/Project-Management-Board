@@ -214,6 +214,7 @@ func createPullRequest(w http.ResponseWriter, r *http.Request, token string) {
 
 	if err != nil {
 		log.Fatalln(err)
+		http.Error(w, err.Error(), http.StatusBadRequest)
 	}
 
 	defer createResponse.Body.Close()
