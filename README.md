@@ -11,15 +11,6 @@ This project was created by:
 - Johnson Zhu
 
 
-## Team Members
-
-This project was created by:
-
-- Matthew Varga
-- Abithan Kumarasamy
-- Johnson Zhu
-
-
 ## Beta Version
 
 Below is a list of key features we would like to have completed for the Beta version:
